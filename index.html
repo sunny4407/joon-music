@@ -565,15 +565,22 @@ function loadCurrent(){
   $('#endedMsg').hidden = true; userPaused = false;
   $('#ytLink').href = 'https://www.youtube.com/watch?v=' + s.id;
   setPlaying(true);
+  /* 이미 만든 유튜브 화면이 있으면 그 안에서 영상만 바꿔요 (유튜브 앱 재생목록처럼 이어서 재생) */
+  const cur=$('#yt');
+  if(cur && ytReady){ ytCmdArgs('loadVideoById',[s.id]); cur.title=s.title; updateFav(); return; }
+  ytReady=false;
   const origin = encodeURIComponent(location.origin && location.origin!=='null' ? location.origin : '');
   $('#video').innerHTML = `<iframe id="yt" src="https://www.youtube.com/embed/${s.id}?autoplay=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1${origin?'&origin='+origin:''}" title="${esc(s.title)}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
   const f=$('#yt'); f.addEventListener('load',()=>{try{f.contentWindow.postMessage(JSON.stringify({event:'listening',id:1}),'*');}catch(e){}});
   updateFav();
 }
-function stopVideo(){$('#video').innerHTML='';}
+let ytReady=false;
+function stopVideo(){ if($('#yt')&&ytReady){ userPaused=true; ytCmd('pauseVideo'); } else {$('#video').innerHTML='';} }
+function ytCmdArgs(func,args){const f=$('#yt'); if(f) try{f.contentWindow.postMessage(JSON.stringify({event:'command',func,args}),'*');}catch(e){}}
 window.addEventListener('message', e=>{
   if(!/youtube/.test(e.origin)) return;
   let d; try{d=typeof e.data==='string'?JSON.parse(e.data):e.data;}catch(x){return;}
+  ytReady=true;
   const st = d && d.info && d.info.playerState;
   if(st===2 && document.hidden && !userPaused){ ytCmd('playVideo'); return; }
   if(typeof st==='number') setPlaying(st===1 || st===3);
