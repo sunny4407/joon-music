@@ -145,6 +145,32 @@ main{display:flex;flex-direction:column;gap:34px;padding-block:24px 40px}
 .ctl-wrap.big span{color:var(--gold);font-weight:700;font-size:19px}
 .toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:14px 20px;border-radius:14px;font-size:17px;max-width:calc(100% - 40px);z-index:20}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* 초록 농도 단계: 900 진한 → 50 아주 연한 */
+:root{--g900:#123B33;--g700:#2F6152;--g400:#93B3A6;--g200:#D3E3DA;--g100:#E4EEE8;--g50:#F0F5F2;
+  --bg:var(--g50);--line:var(--g200);--muted:#4F5C57;--ink:#17201D}
+main{gap:30px}
+.search{border:1.5px solid var(--g700);background:#fff;box-shadow:0 1px 2px rgba(18,59,51,.06)}
+.sec-head .tag,.list-head .tag{display:none}
+.sec-head h2{color:var(--g900);padding-left:12px;border-left:4px solid var(--g700);line-height:1.15;font-size:23px}
+.genre-label{color:var(--g700);font-family:var(--sans);font-size:16px;font-weight:700;letter-spacing:.08em;padding:4px 2px 0}
+.tile{background:var(--g100);border:1px solid var(--g400);border-radius:10px;min-height:104px;padding:14px 16px 13px;box-shadow:0 2px 6px rgba(18,59,51,.07)}
+.tile .cnt{font-size:15px;font-weight:700;color:var(--gold-ink)}
+.tile b{font-size:22px;color:var(--g900);letter-spacing:-.01em}
+.tile small{font-size:15px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.row-link{background:#fff;border:1px solid var(--g400);border-radius:10px;color:var(--g900);min-height:58px}
+.row-link .n{color:var(--gold-ink);font-weight:700}
+.chip{background:#fff;border:1px solid var(--g400);border-radius:10px;color:var(--g900);font-weight:700}
+.chip.more{background:var(--g100);border-color:var(--g700)}
+.songs{border-top:1px solid var(--g400)}
+.song{border-bottom:1px solid var(--g200)}
+.song .t b{color:var(--g900)}
+.play-dot{border:1.5px solid var(--g700);background:#fff}
+.small-btn{border-color:var(--g700);color:var(--g900);font-weight:700;border-radius:10px;background:#fff}
+.list-head h1{color:var(--g900)}
+.list-head .n{color:var(--gold-ink);font-weight:700}
+.playall{border-radius:12px}
+.ytall{border-radius:12px;border-color:var(--g700);color:var(--g900);background:#fff}
+.del-btn{border-radius:10px}
 </style>
 </head>
 <body>
@@ -469,8 +495,8 @@ I Was Made For Lovin' You|KISS|ZhIsAZO5gl0|PF
 const MOODS = [
   {id:'KF', genre:'가요', name:'가요 · 빠른 노래', short:'빠른 노래', hint:'테스형! · 땡벌'},
   {id:'KS', genre:'가요', name:'가요 · 느린 노래', short:'느린 노래', hint:'그 집 앞 · 허공'},
-  {id:'PF', genre:'팝·연주', name:'팝·연주 · 빠른 곡', short:'빠른 곡', hint:'KISS · 짚시 여인'},
-  {id:'PS', genre:'팝·연주', name:'팝·연주 · 느린 곡', short:'느린 곡', hint:'베사메무쵸 · 연주곡'}
+  {id:'PF', genre:'팝·연주', name:'팝·연주 · 빠른 곡', short:'빠른 곡', hint:'짚시 여인'},
+  {id:'PS', genre:'팝·연주', name:'팝·연주 · 느린 곡', short:'느린 곡', hint:'베사메무쵸'}
 ];
 const SONGS = RAW.trim().split('\n').map((l,i)=>{const [title,artist,id,g]=l.split('|');return {i,title,artist,id,g};});
 (function(){const c={};SONGS.forEach(s=>{const k=s.title.replace(/\s*\(.*\)$/,'')+'|'+s.artist;c[k]=(c[k]||0)+1;s.ver=c[k];s.key=k;});
