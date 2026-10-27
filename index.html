@@ -80,6 +80,13 @@ main{display:flex;flex-direction:column;gap:34px;padding-block:24px 40px}
 .list-head{display:flex;flex-direction:column;gap:6px;padding-block:6px 18px}
 .list-head h1{margin:0;font-family:var(--serif);font-size:30px;font-weight:700;text-wrap:balance}
 .list-head .n{font-size:16px;color:var(--muted)}
+.list-actions{display:flex;flex-direction:column;gap:10px;padding-bottom:18px}
+.playall{min-height:62px;border-radius:31px;border:0;background:var(--green);color:#fff;font-size:21px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;width:100%}
+.ytall{min-height:52px;border-radius:26px;border:1.5px solid var(--green);background:transparent;color:var(--green);font-size:17px;font-weight:700;cursor:pointer;width:100%}
+.song.edit{cursor:default}
+.del-btn{min-height:48px;padding:0 18px;border-radius:24px;border:1.5px solid #B4533F;background:#fff;color:#B4533F;font-size:17px;font-weight:700;cursor:pointer;flex-shrink:0}
+.blocked{position:absolute;inset:0;z-index:2;background:#101614;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;text-align:center;font-size:18px;line-height:1.45}
+.blocked a{min-height:52px;padding:0 24px;border-radius:26px;background:var(--gold);color:var(--green);font-size:19px;font-weight:700;display:inline-flex;align-items:center;text-decoration:none}
 
 /* 재생 화면 */
 #player{background:var(--green);min-height:100vh;color:#fff}
@@ -87,8 +94,8 @@ main{display:flex;flex-direction:column;gap:34px;padding-block:24px 40px}
 #player .topbar{background:var(--green)}
 .video{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;background:#000}
 .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.now{text-align:center;padding-block:22px 6px}
-.deck{position:relative;left:11px;width:126px;height:104px;margin:0 auto 14px}
+.now{text-align:center;padding-block:12px 0}
+.deck{position:relative;left:11px;width:126px;height:104px;margin:0 auto 6px}
 .deck .vinyl{position:absolute;left:4px;top:4px;margin:0}
 .arm{position:absolute;left:0;top:0;width:126px;height:104px;overflow:visible;pointer-events:none;
   transform-origin:113px 16px;transform:rotate(-24deg);transition:transform .9s cubic-bezier(.4,0,.2,1)}
@@ -111,7 +118,7 @@ main{display:flex;flex-direction:column;gap:34px;padding-block:24px 40px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .now h1{margin:0;font-family:var(--serif);font-size:30px;font-weight:700;text-wrap:balance}
 .now p{margin:6px 0 0;font-size:20px;color:rgba(255,255,255,.82)}
-.controls{display:flex;align-items:center;justify-content:center;gap:26px;padding-block:18px}
+.controls{display:flex;align-items:center;justify-content:center;gap:26px;padding-block:14px 8px}
 .ctl{width:72px;height:72px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .ctl.big{width:96px;height:96px;border:0;background:var(--gold)}
 .pl-actions{display:flex;flex-direction:column;gap:12px;padding-block:6px 30px}
@@ -173,7 +180,7 @@ main{display:flex;flex-direction:column;gap:34px;padding-block:24px 40px}
     </div>
 
     <div class="sec">
-      <div class="sec-head" style="align-items:center"><h2 style="flex:1;white-space:nowrap">자주 듣는 곡</h2><button class="small-btn" id="shareBtn" type="button" style="white-space:nowrap">목록 보내기</button></div>
+      <div class="sec-head" style="align-items:center;flex-wrap:wrap;row-gap:10px"><h2 style="flex:1 0 auto;white-space:nowrap;margin-right:8px">자주 듣는 곡</h2><span style="display:flex"><button class="small-btn" id="editFavBtn" type="button" style="white-space:nowrap;margin-right:6px;padding:0 12px">정리하기</button><button class="small-btn" id="shareBtn" type="button" style="white-space:nowrap;padding:0 12px">목록 보내기</button></span></div>
       <div class="songs" id="favList"></div>
     </div>
   </main>
@@ -184,6 +191,7 @@ main{display:flex;flex-direction:column;gap:34px;padding-block:24px 40px}
   <header class="apphead pad">준뮤직</header>
   <div class="wrap pad" style="padding-top:18px">
     <div class="list-head"><span class="tag" id="listTag"></span><h1 id="listTitle"></h1><span class="n" id="listCount"></span></div>
+    <div class="list-actions" id="listActions" hidden><button class="playall" id="playAllBtn" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>전체 듣기</button><a class="ytall" id="ytAllBtn" href="#" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;text-decoration:none">유튜브 앱으로 전체 듣기</a></div>
     <div class="songs" id="listBody"></div>
   </div>
   <nav class="bottombar"><div class="wrap pad in">
@@ -196,15 +204,16 @@ main{display:flex;flex-direction:column;gap:34px;padding-block:24px 40px}
 <section id="player" hidden>
   <header class="apphead pad">준뮤직</header>
   <div class="wrap">
-    <div class="video" id="video"></div>
+    <div class="video"><div id="video" style="position:absolute;inset:0"></div><div class="blocked" id="blocked" hidden><div>이 곡은 유튜브에서만<br>들을 수 있어요</div><a id="blockedLink" href="#" target="_blank" rel="noopener">유튜브에서 듣기</a></div></div>
   </div>
   <div class="wrap pad">
-    <div class="now"><div class="deck" aria-hidden="true"><div class="vinyl" id="vinyl"><span class="vlab"><b>Joon</b><i></i></span></div><svg class="arm" id="arm" viewBox="0 0 126 104"><circle cx="113" cy="16" r="4.5" fill="#0d1714" stroke="#D9B877" stroke-width="1.2"/><circle cx="113" cy="16" r="1.5" fill="#D9B877"/><path d="M113 16 L112 42 Q111 50 102 57 L91 62" fill="none" stroke="#D9B877" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="85" y="59.5" width="8" height="5" rx="1" transform="rotate(-22 89 62)" fill="#D9B877"/></svg></div><h1 id="nowTitle"></h1><p id="nowArtist"></p><a id="ytLink" href="#" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;min-height:44px;line-height:44px;font-size:16px;color:var(--gold);text-decoration:underline">영상이 안 나오면 유튜브에서 열기</a></div>
+    <div class="now"><div class="deck" aria-hidden="true"><div class="vinyl" id="vinyl"><span class="vlab"><b>Joon</b><i></i></span></div><svg class="arm" id="arm" viewBox="0 0 126 104"><circle cx="113" cy="16" r="4.5" fill="#0d1714" stroke="#D9B877" stroke-width="1.2"/><circle cx="113" cy="16" r="1.5" fill="#D9B877"/><path d="M113 16 L112 42 Q111 50 102 57 L91 62" fill="none" stroke="#D9B877" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="85" y="59.5" width="8" height="5" rx="1" transform="rotate(-22 89 62)" fill="#D9B877"/></svg></div><h1 id="nowTitle"></h1><p id="nowArtist"></p></div>
     <div class="controls">
       <div class="ctl-wrap"><button class="ctl" id="prevBtn" type="button" aria-label="이전 곡"><svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M6 6h2v12H6zM9.5 12L18 6v12z"/></svg></button><span>이전 곡</span></div>
       <div class="ctl-wrap big"><button class="ctl big" id="ppBtn" type="button" aria-label="멈춤"><svg id="ppIcon" width="40" height="40" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button><span id="ppLabel">멈춤</span></div>
       <div class="ctl-wrap"><button class="ctl" id="nextBtn" type="button" aria-label="다음 곡"><svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg></button><span>다음 곡</span></div>
     </div>
+    <div style="text-align:center"><a id="ytLink" href="#" target="_blank" rel="noopener" style="display:inline-block;min-height:44px;line-height:44px;font-size:16px;color:var(--gold);text-decoration:underline">영상이 안 나오면 유튜브에서 열기</a></div>
     <div class="pl-actions">
       <p class="ended" id="endedMsg" hidden>노래가 끝났어요. 다른 곡은 아래 "목록으로"를 눌러 고르세요.</p>
       <button class="wide" id="fsBtn" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>영상 크게 보기</button>
@@ -494,7 +503,7 @@ function show(view){['home','list','player'].forEach(v=>$('#'+v).hidden = v!==vi
 function go(view, data){history.pushState({view, data}, ''); render(view, data);}
 function render(view, data){
   if(view!=='player') stopVideo();
-  if(view==='home'){renderHome(); show('home');}
+  if(view==='home'){favEdit=false; renderHome(); show('home');}
   if(view==='list'){openList(data); show('list');}
   if(view==='player'){show('player');}
 }
@@ -503,6 +512,7 @@ document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',(
 document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',()=>go('home')));
 
 /* 첫 화면 */
+let favEdit = false;
 function renderHome(){
   $('#moodGrid').innerHTML = ['가요','팝·연주'].map(gn=>`<div class="genre-label">${gn}</div>` + MOODS.filter(m=>m.genre===gn).map(m=>{const n=SONGS.filter(s=>s.g===m.id).length;return `<button class="tile" type="button" data-m="${m.id}"><span class="cnt">${n}곡</span><span><b>${m.short}</b><br><small>${m.hint}</small></span></button>`;}).join('')).join('');
   $('#moodGrid').querySelectorAll('.tile').forEach(b=>b.addEventListener('click',()=>go('list',{type:'mood',key:b.dataset.m})));
@@ -514,6 +524,17 @@ function renderHome(){
   let fav = SONGS.filter(s=>favs.includes(s.id));
   const played = SONGS.filter(s=>plays[s.id] && !favs.includes(s.id)).sort((a,b)=>plays[b.id]-plays[a.id]).slice(0, Math.max(0, 5-fav.length));
   let list = fav.concat(played);
+  $('#editFavBtn').hidden = !list.length;
+  $('#editFavBtn').textContent = favEdit ? '다 했어요' : '정리하기';
+  if(favEdit){
+    if(!list.length){ favEdit=false; $('#editFavBtn').hidden=true; }
+    else {
+      $('#favList').innerHTML = list.map(s=>`<div class="song edit"><span class="t"><b>${esc(s.title)}</b><span>${esc(s.artistLabel)}</span></span><button class="del-btn" type="button" data-id="${s.id}">빼기</button></div>`).join('');
+      $('#favList').querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.id;
+        favs=favs.filter(x=>x!==id); store.set('favs',favs); delete plays[id]; store.set('plays',plays); toast('자주 듣는 곡에서 뺐어요.'); renderHome();}));
+      return;
+    }
+  }
   if(!list.length) list = SONGS.filter(s=>['NKzCydhgHwI','i0x76xs0bq4','kYCVzpSsH3s'].includes(s.id));
   songRows(list, $('#favList'));
 }
@@ -526,6 +547,7 @@ function openList(d){
   if(d.type==='all'){title='전체 곡'; tag='ALL'; list=SONGS.slice().sort(byTitle);}
   if(d.type==='search'){title=`"${d.key}" 찾은 결과`; tag='SEARCH'; const q=norm(d.key); const words=d.key.trim().split(/\s+/).map(norm).filter(Boolean);
     list=SONGS.filter(s=>{const h=norm(s.title+s.artist); return h.includes(q) || (words.length>1 && words.every(w=>h.includes(w)));});}
+  $('#listActions').hidden = true;
   if(d.type==='artists'){
     const counts={}; SONGS.forEach(s=>counts[s.artist]=(counts[s.artist]||0)+1);
     const names=Object.keys(counts).sort((a,b)=>a.localeCompare(b,'ko'));
@@ -536,8 +558,13 @@ function openList(d){
   }
   $('#listTag').textContent=tag; $('#listTitle').textContent=title; $('#listCount').textContent=list.length+'곡';
   songRows(list, $('#listBody'));
+  curList = list; $('#listActions').hidden = list.length < 2;
+  $('#ytAllBtn').href = 'https://www.youtube.com/watch_videos?video_ids=' + list.slice(0,50).map(s=>s.id).join(',');
+  $('#ytAllBtn').textContent = list.length>50 ? '유튜브 앱으로 전체 듣기 (앞 50곡)' : '유튜브 앱으로 전체 듣기';
 }
 $('#allBtn').addEventListener('click',()=>go('list',{type:'all'}));
+let curList = [];
+$('#playAllBtn').addEventListener('click',()=>{ if(!curList.length) return; setAuto(true); play(curList, 0); toast('처음 곡부터 끝까지 이어서 들려 드려요.'); });
 $('#searchForm').addEventListener('submit',e=>{e.preventDefault(); const v=$('#q').value.trim(); if(v){$('#q').blur(); go('list',{type:'search',key:v});}});
 
 /* 말로 찾기 */
@@ -562,7 +589,8 @@ function loadCurrent(){
   const s = queue[qPos]; if(!s) return;
   plays[s.id]=(plays[s.id]||0)+1; store.set('plays',plays);
   $('#nowTitle').textContent=s.title; $('#nowArtist').textContent=s.artist;
-  $('#endedMsg').hidden = true; userPaused = false;
+  $('#endedMsg').hidden = true; userPaused = false; $('#blocked').hidden = true; clearTimeout(skipT);
+  $('#blockedLink').href = 'https://www.youtube.com/watch?v=' + s.id;
   $('#ytLink').href = 'https://www.youtube.com/watch?v=' + s.id;
   setPlaying(true);
   /* 이미 만든 유튜브 화면이 있으면 그 안에서 영상만 바꿔요 (유튜브 앱 재생목록처럼 이어서 재생) */
@@ -574,13 +602,19 @@ function loadCurrent(){
   const f=$('#yt'); f.addEventListener('load',()=>{try{f.contentWindow.postMessage(JSON.stringify({event:'listening',id:1}),'*');}catch(e){}});
   updateFav();
 }
-let ytReady=false;
+let ytReady=false, skipT=0;
+/* 다른 사이트에서 재생을 막아 둔 영상: 안내를 보여 주고, 전체 듣기 중이면 다음 곡으로 */
+function onBlocked(){
+  $('#blocked').hidden=false; setPlaying(false);
+  if(autoNext && qPos < queue.length-1){ toast('이 곡은 여기서 안 나와서 다음 곡으로 넘어가요.'); skipT=setTimeout(()=>{qPos++; loadCurrent();},3000); }
+}
 function stopVideo(){ if($('#yt')&&ytReady){ userPaused=true; ytCmd('pauseVideo'); } else {$('#video').innerHTML='';} }
 function ytCmdArgs(func,args){const f=$('#yt'); if(f) try{f.contentWindow.postMessage(JSON.stringify({event:'command',func,args}),'*');}catch(e){}}
 window.addEventListener('message', e=>{
   if(!/youtube/.test(e.origin)) return;
   let d; try{d=typeof e.data==='string'?JSON.parse(e.data):e.data;}catch(x){return;}
   ytReady=true;
+  if(d && d.event==='onError'){ onBlocked(); return; }
   const st = d && d.info && d.info.playerState;
   if(st===2 && document.hidden && !userPaused){ ytCmd('playVideo'); return; }
   if(typeof st==='number') setPlaying(st===1 || st===3);
@@ -622,6 +656,7 @@ $('#favBtn').addEventListener('click',()=>{const s=queue[qPos]; if(!s) return;
   if(favs.includes(s.id)){favs=favs.filter(x=>x!==s.id); toast('자주 듣는 곡에서 뺐어요.');} else {favs.push(s.id); toast('자주 듣는 곡에 담았어요.');}
   store.set('favs',favs); updateFav();});
 
+$('#editFavBtn').addEventListener('click',()=>{ favEdit=!favEdit; renderHome(); });
 /* 목록 보내기: 휴대폰 공유창으로 가족에게 보내기 */
 $('#shareBtn').addEventListener('click', async ()=>{
   const list = SONGS.filter(s=>favs.includes(s.id) || plays[s.id]);
