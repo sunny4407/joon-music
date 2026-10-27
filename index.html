@@ -615,7 +615,7 @@ function loadCurrent(){
   const s = queue[qPos]; if(!s) return;
   plays[s.id]=(plays[s.id]||0)+1; store.set('plays',plays);
   $('#nowTitle').textContent=s.title; $('#nowArtist').textContent=s.artist;
-  $('#endedMsg').hidden = true; userPaused = false; $('#blocked').hidden = true; clearTimeout(skipT);
+  $('#endedMsg').hidden = true; userPaused = false; lastT = 0; $('#blocked').hidden = true; clearTimeout(skipT);
   $('#blockedLink').href = 'https://www.youtube.com/watch?v=' + s.id;
   $('#ytLink').href = 'https://www.youtube.com/watch?v=' + s.id;
   setPlaying(true);
@@ -628,7 +628,7 @@ function loadCurrent(){
   const f=$('#yt'); f.addEventListener('load',()=>{try{f.contentWindow.postMessage(JSON.stringify({event:'listening',id:1}),'*');}catch(e){}});
   updateFav();
 }
-let ytReady=false, skipT=0;
+let ytReady=false, skipT=0, lastT=0;
 /* 다른 사이트에서 재생을 막아 둔 영상: 안내를 보여 주고, 전체 듣기 중이면 다음 곡으로 */
 function onBlocked(){
   $('#blocked').hidden=false; setPlaying(false);
@@ -642,6 +642,9 @@ window.addEventListener('message', e=>{
   ytReady=true;
   if(d && d.event==='onError'){ onBlocked(); return; }
   const st = d && d.info && d.info.playerState;
+  /* 재생 시간이 흘러가면 실제로 재생 중인 것: 레코드판을 돌려요 */
+  const ct = d && d.info && d.info.currentTime;
+  if(typeof ct==='number'){ if(ct > lastT + 0.05 && !isPlaying && !userPaused) setPlaying(true); lastT = ct; }
   if(st===2 && document.hidden && !userPaused){ ytCmd('playVideo'); return; }
   if(typeof st==='number') setPlaying(st===1 || st===3);
   if(st===0){ if(autoNext && qPos < queue.length-1){qPos++; loadCurrent();} else {$('#endedMsg').hidden=false;} }
