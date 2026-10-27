@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123B33">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="애창곡">
+<title>최홍준님의 애창곡</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23123B33'/%3E%3Cpath d='M26 44V18l20-4v26' fill='none' stroke='%23D9B877' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='21' cy='44' r='6' fill='%23D9B877'/%3E%3Ccircle cx='41' cy='40' r='6' fill='%23D9B877'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@500;700&display=swap">
+<style>
+/* 한 손으로 쓰는 세로 화면: 진초록 머리띠 + 맑은 바탕의 목록 */
+:root{
+  --green:#123B33; --green-2:#1C4A40; --gold:#D9B877; --gold-ink:#8E6E33;
+  --bg:#F4F5F2; --surface:#FFFFFF; --ink:#1F2523; --muted:#5F6663; --line:#E3E6E2;
+  --serif:'Noto Serif KR','Nanum Myeongjo',serif; --sans:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-text-size-adjust:100%}
+body{padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input{font-family:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+[hidden]{display:none!important}
+.wrap{max-width:560px;margin:0 auto}
+.pad{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+/* 머리띠 */
+.hero{background:var(--green);color:#fff;padding-top:calc(30px + env(safe-area-inset-top,0px));padding-bottom:28px;text-align:center}
+.eyebrow{font-size:15px;letter-spacing:.3em;color:var(--gold);font-weight:500}
+.hero h1{font-family:var(--serif);font-weight:500;font-size:29px;line-height:1.4;margin:10px 0 0;text-wrap:balance}
+.mic{margin:18px auto 0;width:132px;height:132px;border-radius:50%;border:1.5px solid rgba(217,184,119,.6);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.mic span{width:104px;height:104px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;transition:background .2s}
+.mic.on{border-color:#fff}.mic.on span{background:#fff}
+.mic-label{margin-top:10px;font-size:19px;font-weight:500}
+.mic-hint{margin-top:2px;font-size:16px;color:rgba(255,255,255,.72)}
+
+main{display:flex;flex-direction:column;gap:34px;padding-block:24px 40px}
+.search{display:flex;align-items:center;gap:8px;height:60px;padding:0 7px 0 20px;background:var(--surface);border:1px solid #D6DBD7;border-radius:30px}
+.search input{flex:1;min-width:0;height:56px;border:0;outline:0;background:transparent;font-size:19px;color:var(--ink)}
+.search input::placeholder{color:#7A807D}
+.circle-btn{width:46px;height:46px;flex-shrink:0;border:0;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sec{display:flex;flex-direction:column;gap:14px}
+.sec-head{display:flex;align-items:baseline;gap:10px}
+.sec-head h2{margin:0;font-family:var(--serif);font-size:23px;font-weight:700}
+.tag{font-size:13px;letter-spacing:.2em;color:var(--gold-ink)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.genre-label{grid-column:1/-1;font-family:var(--serif);font-size:18px;font-weight:700;color:var(--green);padding:6px 2px 0}
+.tile{min-height:96px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;justify-content:space-between;gap:6px;text-align:left;cursor:pointer;color:var(--ink)}
+.tile .cnt{font-size:14px;color:var(--gold-ink);font-variant-numeric:tabular-nums}
+.tile b{font-size:19px;line-height:1.3}
+.tile small{font-size:15px;color:var(--muted);line-height:1.35}
+.row-link{min-height:54px;padding:0 16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;display:flex;align-items:center;gap:10px;cursor:pointer;width:100%;font-size:18px;font-weight:700;color:var(--ink)}
+.row-link span:first-child{flex:1;text-align:left}
+.row-link .n{font-size:15px;font-weight:400;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:50px;padding:0 20px;border-radius:25px;border:1px solid #CBD1CC;background:var(--surface);font-size:18px;font-weight:500;color:var(--ink);cursor:pointer}
+.chip.more{border-color:var(--green);color:var(--green)}
+
+/* 곡 목록 */
+.songs{display:flex;flex-direction:column;border-top:1px solid #D6DBD7}
+.song{display:flex;align-items:center;gap:14px;min-height:78px;padding:10px 2px;border-bottom:1px solid var(--line);background:transparent;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;cursor:pointer;color:var(--ink)}
+.song .t{flex:1;min-width:0;display:flex;flex-direction:column}
+.song .t b{font-size:20px;line-height:1.35}
+.song .t span{font-size:16px;color:var(--muted)}
+.play-dot{width:48px;height:48px;border-radius:50%;border:1px solid var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.heart-mark{color:var(--gold-ink);font-size:15px;margin-left:4px}
+.empty{padding:22px 4px;font-size:17px;color:var(--muted);line-height:1.6}
+.small-btn{min-height:44px;padding:0 16px;border:1px solid var(--green);border-radius:22px;background:transparent;color:var(--green);font-size:16px;font-weight:500;cursor:pointer}
+
+/* 목록 화면 */
+.topbar{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:calc(10px + env(safe-area-inset-top,0px));padding-bottom:6px}
+.back{min-height:52px;display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;font-size:19px;font-weight:500;color:var(--green);cursor:pointer;padding:0 6px 0 0}
+.list-head{display:flex;flex-direction:column;gap:6px;padding-block:6px 18px}
+.list-head h1{margin:0;font-family:var(--serif);font-size:30px;font-weight:700;text-wrap:balance}
+.list-head .n{font-size:16px;color:var(--muted)}
+
+/* 재생 화면 */
+#player{background:var(--green);min-height:100vh;color:#fff}
+#player .back{color:var(--gold)}
+#player .topbar{background:var(--green)}
+.video{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;background:#000}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.now{text-align:center;padding-block:22px 6px}
+.now h1{margin:0;font-family:var(--serif);font-size:30px;font-weight:700;text-wrap:balance}
+.now p{margin:6px 0 0;font-size:20px;color:rgba(255,255,255,.82)}
+.controls{display:flex;align-items:center;justify-content:center;gap:26px;padding-block:18px}
+.ctl{width:72px;height:72px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ctl.big{width:96px;height:96px;border:0;background:var(--gold)}
+.pl-actions{display:flex;flex-direction:column;gap:12px;padding-block:6px 30px}
+.wide{min-height:62px;border-radius:31px;border:1.5px solid var(--gold);background:transparent;color:var(--gold);font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;width:100%}
+.wide.on{background:var(--gold);color:var(--green)}
+.switch{min-height:58px;border:0;background:transparent;color:#fff;display:flex;align-items:center;gap:14px;font-size:19px;font-weight:700;cursor:pointer;width:100%;padding:0 4px}
+.switch .lab{flex:1;text-align:left}
+.track{width:64px;height:36px;border-radius:18px;background:rgba(255,255,255,.3);padding:3px;display:flex;transition:background .2s}
+.knob{width:30px;height:30px;border-radius:50%;background:#fff;transition:transform .2s}
+.switch[aria-checked="true"] .track{background:var(--gold)}
+.switch[aria-checked="true"] .knob{transform:translateX(28px)}
+.state{width:28px;font-size:18px;color:rgba(255,255,255,.8)}
+.ended{margin:0 0 4px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.1);font-size:18px;text-align:center}
+
+/* 모든 화면 위 제목 + 아래 고정 버튼 */
+.apphead{position:sticky;top:0;z-index:6;background:var(--green);color:var(--gold);text-align:center;font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:.12em;padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:14px;border-bottom:1px solid rgba(217,184,119,.25)}
+.bottombar{position:fixed;left:0;right:0;bottom:0;z-index:8;background:var(--green);border-top:1px solid rgba(217,184,119,.3);padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.bottombar .in{display:flex;gap:10px}
+.navbtn{flex:1;min-height:64px;border-radius:16px;border:1.5px solid var(--gold);background:transparent;color:var(--gold);font-size:21px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.navbtn.main{background:var(--gold);color:var(--green)}
+#list,#player{padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+.ctl-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+.ctl-wrap span{font-size:17px;color:rgba(255,255,255,.85)}
+.ctl-wrap.big span{color:var(--gold);font-weight:700;font-size:19px}
+.toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:14px 20px;border-radius:14px;font-size:17px;max-width:calc(100% - 40px);z-index:20}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- 첫 화면 -->
+<section id="home">
+  <div class="hero pad">
+    <div class="eyebrow">최홍준님의 애창곡</div>
+    <h1>오늘은 어떤 노래를<br>들어볼까요?</h1>
+    <button class="mic" id="micBtn" aria-label="눌러서 노래 제목 말하기"><span>
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#123B33" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+    </span></button>
+    <div class="mic-label" id="micLabel">눌러서 말하기</div>
+    <div class="mic-hint">예) "조용필 허공"</div>
+  </div>
+  <main class="wrap pad">
+    <form class="search" id="searchForm" role="search">
+      <label for="q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">노래 제목이나 가수 입력</label>
+      <input id="q" type="search" placeholder="제목이나 가수로 찾기" autocomplete="off" enterkeyhint="search">
+      <button class="circle-btn" type="submit" aria-label="찾기"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></button>
+    </form>
+
+    <div class="sec">
+      <div class="sec-head"><h2>장르로 찾기</h2><span class="tag">GENRE</span></div>
+      <div class="grid" id="moodGrid"></div>
+      <button class="row-link" id="allBtn" type="button"><span>전체 곡 보기</span><span class="n" id="allCount"></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E6E33" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><h2>가수별로 찾기</h2><span class="tag">ARTIST</span></div>
+      <div class="chips" id="artistChips"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head" style="align-items:center"><h2 style="flex:1;white-space:nowrap">자주 듣는 곡</h2><button class="small-btn" id="shareBtn" type="button" style="white-space:nowrap">목록 보내기</button></div>
+      <div class="songs" id="favList"></div>
+    </div>
+  </main>
+</section>
+
+<!-- 목록 화면 -->
+<section id="list" hidden>
+  <header class="apphead pad">최홍준님의 애창곡</header>
+  <div class="wrap pad" style="padding-top:18px">
+    <div class="list-head"><span class="tag" id="listTag"></span><h1 id="listTitle"></h1><span class="n" id="listCount"></span></div>
+    <div class="songs" id="listBody"></div>
+  </div>
+  <nav class="bottombar"><div class="wrap pad in">
+    <button class="navbtn" type="button" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>뒤로</button>
+    <button class="navbtn main" type="button" data-home>처음으로</button>
+  </div></nav>
+</section>
+
+<!-- 재생 화면 -->
+<section id="player" hidden>
+  <header class="apphead pad">최홍준님의 애창곡</header>
+  <div class="wrap">
+    <div class="video" id="video"></div>
+  </div>
+  <div class="wrap pad">
+    <div class="now"><h1 id="nowTitle"></h1><p id="nowArtist"></p><a id="ytLink" href="#" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;min-height:44px;line-height:44px;font-size:16px;color:var(--gold);text-decoration:underline">영상이 안 나오면 유튜브에서 열기</a></div>
+    <div class="controls">
+      <div class="ctl-wrap"><button class="ctl" id="prevBtn" type="button" aria-label="이전 곡"><svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M6 6h2v12H6zM9.5 12L18 6v12z"/></svg></button><span>이전 곡</span></div>
+      <div class="ctl-wrap big"><button class="ctl big" id="ppBtn" type="button" aria-label="멈춤"><svg id="ppIcon" width="40" height="40" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button><span id="ppLabel">멈춤</span></div>
+      <div class="ctl-wrap"><button class="ctl" id="nextBtn" type="button" aria-label="다음 곡"><svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg></button><span>다음 곡</span></div>
+    </div>
+    <div class="pl-actions">
+      <p class="ended" id="endedMsg" hidden>노래가 끝났어요. 다른 곡은 아래 "목록으로"를 눌러 고르세요.</p>
+      <button class="wide" id="fsBtn" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>영상 크게 보기</button>
+      <button class="switch" id="autoBtn" type="button" role="switch" aria-checked="false"><span class="lab">다음 곡 자동 재생</span><span class="track"><span class="knob"></span></span><span class="state" id="autoState">끔</span></button>
+      <button class="wide" id="favBtn" type="button"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.5-9.2C1.2 8.5 3.3 5 6.8 5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.5 0 5.6 3.5 4.3 6.8C19.5 16.4 12 21 12 21z"/></svg><span id="favLabel">자주 듣는 곡에 담기</span></button>
+    </div>
+  </div>
+  <nav class="bottombar"><div class="wrap pad in">
+    <button class="navbtn" type="button" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>목록으로</button>
+    <button class="navbtn main" type="button" data-home>처음으로</button>
+  </div></nav>
+</section>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const RAW = `가버린 사랑|박현|VleoUWFHm8A|KS
+그 집 앞|이재성|NKzCydhgHwI|KS
+그 집 앞 (영상)|이재성|J-RSBdXwZFE|KS
+그 집 앞 (가사)|이재성|YnPlGggfo5Q|KS
+그 집 앞 (라이브 커버)|두리|KkbiufT9SMQ|KS
+그 집 앞|Big Man|ur9uGjMDKk0|KS
+그 집 앞 (라이브)|미스터팡|jFvkAxFUQ6g|KF
+기쁜 우리 사랑은|최성수|EoK4IOu1T3U|KS
+해후|최성수|8ZOiiWYmKbA|KS
+애수|최성수|6rGGnrMi7N0|KS
+남남|최성수|XX2R2RP5rE8|KS
+해바라기 (그녀에게)|박상민|n24XmdCqLBg|KS
+하나의 사랑|박상민|5Z8SI_x_MeY|KS
+비원|박상민|PDd8MHrahrU|KS
+무기여 잘 있거라|박상민|SretLU0LuwI|KF
+청바지 아가씨|박상민|6eOH6bnSJiw|KF
+빗물|박상민|I-Rp0latwVw|KS
+등불|영사운드|ddQyRjljv0I|KS
+상록수|영사운드|I26vKZ5ew8U|KS
+고향의 벗|영사운드|x84pka98Vkc|KS
+사랑만은 않겠어요|윤수일|RSFv09xhdLA|KF
+사랑만은 않겠어요 (라이브)|윤수일|QTg09KYdYpE|KF
+사랑만은 않겠어요|윤수일|d6P_RFK4HsM|KF
+찻잔의 이별|윤수일|znc5rPqgFEo|KS
+추억|윤수일|bGSVbvi7R2c|KS
+Town on Island|윤수일|golUcZ8qGoM|KF
+If You Say Okay|신유|QRoa-JlMJjs|KF
+테스형!|나훈아|6HWxLhoF-40|KF
+사내|나훈아|zbgq57KFLIQ|KS
+명자!|나훈아|usHvad89tbc|KF
+첫사랑|이찬원|_bSpsyjAMJI|KS
+니가 왜 거기서 나와|영탁|QU1PR6QOzz4|KF
+막걸리 한잔|영탁|QOlIpphN_XQ|KS
+우연히|우연이|7ZRlnPUaD9M|KF
+땡벌|강진|Q3Y4BJDT0lk|KF
+네박자|송대관|H568EjXYndQ|KF
+해뜰날|송대관|DUsVXmywSCk|KF
+나야 나|남진|ybqyVRth72Y|KF
+I like you|남진|8JQAXfCJ7tc|KF
+빈잔|남진|Cfef65L1ji8|KS
+님과 함께|남진|3CtWW6As5Yo|KF
+베사메무쵸|에릭장|WIxB8R49NBM|PS
+베사메무쵸|박용강|MmIsWUN1Fls|PS
+베사메무쵸|진해성|tLf31XhED9A|PS
+베사메무쵸|양수경|4mjG2kPsY6E|PS
+한 많은 대동강|진해성|MvRqZAhPWXI|KS
+안동역에서|진성|lP0ue7SexN0|KS
+안동역에서|진성|-kpve_FSzc4|KS
+보릿고개|진성|9n93IeQ6Gsw|KS
+내 여인|진성|QB0upAkKoTI|KS
+통나무집|소리새|8ASRhZCWfJU|KS
+사랑아|강승모|bz0le38I44M|KS
+무정 부르스 (소개 영상)|소리바다 어워즈|y0Y4oxplMcc|KS
+Lovers|한승기|ZIlqL-g6Tak|KS
+돌아보지 마세요|임영웅|iGQFleA-TlY|KS
+거짓말|조항조|nIJESX4tEaU|KS
+Thank you|조항조|s2O731vZOmA|KS
+남자라는 이유로|조항조|j-tMrgzSVk8|KS
+만약에|조항조|fgYv93eqvaE|KS
+옹이|조항조|0uGaqsXAVZA|KS
+사랑아|장윤정|avbsILJgZWc|KF
+초혼|장윤정|H0ofGB4wI4g|KS
+나랑 가요|박서진|XjkXHnDPp4I|KF
+나불도 연가|최수호|i0x76xs0bq4|KS
+기다리는 아픔|조용필|f-qpPh8wSyU|KS
+기다리는 아픔|조용필|Db8qDDgfDcE|KS
+바람의 노래|조용필|grwEO2ChpKk|KS
+그 겨울의 찻집|조용필|pT-YZCtJgy4|KS
+이젠 그랬으면 좋겠네|조용필|YFGDCobBgk4|KS
+단발머리|조용필|EkD4N_aLUNo|KF
+그대 발길 머무는 곳에|조용필|gZr0Ryd4Wzs|KS
+허공|조용필|kYCVzpSsH3s|KS
+문 밖에 있는 그대|박강성|1RCKJRN88lQ|KS
+문 밖에 있는 그대 (콘서트7080)|박강성|ShCEmwYJd08|KS
+장난감 병정|박강성|3k1KCnVon2U|KS
+가까이 하기엔 너무 먼 당신|이광조|KZPYftIB8oQ|KS
+가까이 하기엔 너무 먼 당신|이광조|Zas4EggNKPE|KS
+내게도 사랑이|함중아|hjlgCvf9ah0|KS
+내게도 사랑이|함중아|dzm0HqirKxw|KS
+안개속의 두그림자|함중아|1yOezCE-tFc|KS
+풍문으로 들었소|함중아|QflGam2JXV4|KF
+카스바의 여인|함중아|14eIAL-hyS4|KS
+오동잎 (라이브)|최헌|fNupxWXFAmo|KS
+앵두|최헌|5hrtebDqfFk|KF
+앵두|최헌|09WF1dYTeFw|KF
+가을비 우산속|최헌|C_fKy3pHXbQ|KS
+Time|최헌|87JGxNeJRgY|KS
+My Dear|최헌|ppJ9RJTwlnk|KS
+실버들|최헌|sfaxi2NAYAQ|KS
+바람이 불어오는 곳|김광석|fHRUqECsM8g|KS
+인연|이선희|qewsZWhwoWM|KS
+빗속에서|이문세|5c5SSvmXKlU|KS
+사랑은 늘 도망가|이문세|muw3xU91G9w|KS
+나 그대에게 모두 드리리|이장희|cGZL99RNnJk|KS
+그건 너|이장희|Flg3hnpnrG4|KF
+그건 너|이장희|g8JkiJ8LWc4|KF
+한잔의 추억|이장희|qwZBwEm90uQ|KS
+한동안 뜸했었지|사랑과 평화|zlV0ecq6Aqk|KF
+봄비 (콘서트7080)|이은하|wl7hJr6kwto|KS
+미소를 띄우며 나를 보낸 그 모습처럼|이은하|TJGJ7UJuGtc|KS
+미소를 띄우며 나를 보낸 그 모습처럼|이은하|4en_mAbn4PM|KS
+당신께만|이은하|amz377m4wZ8|KS
+어쩌다 마주친 그대|송골매|VGq9b3gLXqk|KF
+세상 모르고 살았노라|송골매|j2HwsO-BQtc|KF
+모두 다 사랑하리|송골매|9QIHJNbgl0Y|KF
+모두 다 사랑하리 (라이브)|송골매|HGdfA9wu8_I|KF
+처음 본 순간|송골매|v6AH5s2YoTY|KS
+그대는 나는 (라이브)|송골매|MFgZBNL-9aY|KS
+빗물 (라이브)|송골매|R3v2qahe64A|KS
+아픈 만큼 성숙해지고 (라이브)|송골매|Z4I_L4xt030|KS
+희나리 (라이브)|송골매|mr8tvrMM_pI|KS
+구름과 나 (라이브)|송골매|rQe5PpU5qvA|KF
+사랑 그 아름답고 소중한 얘기들 (라이브)|송골매|5sihnf_z4KU|KS
+새벽비 (라인댄스)|라인댄스 영상|goVLMzB7O0o|PF
+키스미 무초 (라인댄스)|라인댄스 영상|1PdSmrBM_6I|PF
+새벽비|혜은이|H2KOWhMz1iE|KF
+미치게 그리워서|유해준|RohCNV-amBc|KS
+나에게 그대만이|유해준|lRb8nZZLWXA|KS
+하얀 나비|김정호|stbwFeDU-0Y|KS
+하얀 나비|김정호|AnZmMom5asI|KS
+빗속을 둘이서|김정호|ft3rnkY7_eo|KS
+해변으로 가요|키보이스|6etvJkebL00|KF
+찻집의 고독|한세일|Z1GfGDhWCYc|KS
+촛불|정태춘|KBv6ok4-AOc|KS
+목화밭|하사와 병장|PV-CfwX3U2Y|KF
+목화밭|하사와 병장|yfexw6K1C6Q|KF
+두 개의 작은 별|송창식|57G7xDMlGuQ|KS
+그 사람 이름은 잊었지만|송창식|ICN5L1JXWoY|KS
+고래사냥|송창식|HamiPXxnQYc|KF
+사랑없인 못살아요|조영남|TtR2Hv0MIvc|KS
+세노야|조영남|IeRjRJupkVQ|KS
+그댄 봄비를 무척 좋아하나요|배따라기|yWE8bbXCdnI|KS
+그댄 봄비를 무척 좋아하나요|배따라기|NtLFLld_Zl0|KS
+토요일은 밤이 좋아|김종찬|uFhrhi7j3Qw|KF
+사랑이 저만치 가네|김종찬|bki6HQ-6q4o|KS
+촛불잔치|이재성|KVK9ao5G8sA|KS
+불티|전영록|v1TA-iCtuck|KF
+내 사랑 울보 (1986 가요대상)|전영록|THHWyFjijy8|KF
+내 사랑 울보|전영록|eVhY90BCCGw|KF
+사랑은 연필로 쓰세요|전영록|h7_fB4-ThCM|KS
+그대 우나봐|전영록|4ag6aGqBhcw|KS
+그대 우나봐|전영록|q_Z9hpRhEww|KS
+저녁놀|전영록|G8HlfxiD4Kk|KS
+종이학|전영록|cqWtrwDciBI|KS
+아직도 어두운 밤인가봐|전영록|iXo9BeuCyTQ|KS
+꿈에|조덕배|sDMBYfwx75M|KS
+남행열차|김수희|VAQV7_inmxg|KF
+Station|김수희|moXNmlowkpY|KS
+그때 그 사람|심수봉|vQ2kWkcvQ6w|KS
+사랑은 창밖에 빗물 같아요|양수경|MpEsAOJn4T4|KS
+사랑은 창밖에 빗물 같아요 (전영록과 함께)|양수경|422iVZxn3xE|KS
+당신은 어디 있나요|양수경|nuGcPlUhiOA|KS
+사랑은 차가운 유혹|양수경|F2p_NwOtRQQ|KF
+잊을래|양수경|-JFfJ5nguhg|KS
+잊을래|양수경|W6SJo2qjvts|KS
+외면|양수경|mkh2ebh0m4k|KS
+바라볼 수 없는 그대|양수경|Mcd8MhDczPw|KS
+이별의 끝은 어디인가요|양수경|uJOFJMP8sh4|KS
+그대는 (1988)|양수경|Z5b2i03cLiM|KS
+내일이 오면|양수경|2UR3h-0CU_k|KS
+사랑의 배터리|홍진영|qb-eWHxZaGM|KF
+엄지 척|홍진영|f4-Rm4TwzNc|KF
+사랑의 와이파이|홍진영|1sBzh5BQYow|KF
+월량대표아심 (기다리는 마음)|홍진영|ew1O-Ia_y2k|PS
+월량대표아심 (뮤직비디오)|홍진영|yQxB1M0VZLU|PS
+인생은 미완성|인생은 미완성 영상|wYy76-nApAE|KS
+겨울비|김범룡|TdxLQam4LwU|KS
+님 떠난 후|현이와 덕이|IgVair5i_AU|KF
+철없던 사랑|홍수철|H8dI3DrKM1k|KF
+짝사랑|손인호|GlEda808RG0|KS
+울어라 기타줄아|손인호|nOHX9Pj6X2Y|KS
+코스모스 피어 있는 길|김상희|SZiDQj5_j2c|KS
+빛과 그림자|최희준|tvSVZjVr2RY|KS
+하숙생|최희준|wQCOOyAHRbQ|KS
+고향초|장세정|QfCUeT23ZFU|KS
+고향초|홍민|pkPC_E_lEGc|KS
+찻잔|노고지리|939Atc0NFpM|KS
+아니 벌써|산울림|0deHcNFCEDs|KF
+가는 세월|서유석|8WXMUF2Tbb0|KS
+월남에서 돌아온 김상사|김추자|ahv7okYJo68|KF
+조약돌|박상규|GKw5H-LyMO4|KS
+비와 외로움|바람꽃|_jqMzllSZSk|KS
+내일|김수철|OejlDnWWbps|KS
+잊지는 않겠어요|Virile Son|VKsiqKoeeQM|KS
+젊은 미소|Virile Son|3ckJgMgC3vw|KF
+장미|Virile Son|fMSIPeC78II|KF
+가버린 친구에게 바침|Virile Son|Q52zClGw0e0|KS
+사랑한다면|Virile Son|Yg7JelsrGsE|KS
+금연|Virile Son|-vCwCazYNYI|KF
+아직도 못다한 사랑|솔개트리오|2EbVPT4vwwU|KS
+나 그대에게 모두 드리리|김윤석|zgflLSDmi4A|KS
+Empty Hands|현진우|jrotQDOV9Do|KS
+비(悲)의 랩소디|최재훈|oRiMgp5wxWU|KF
+짚시 여인 (연주)|릴리즈|x2ESfOcndkc|PF
+베사메무쵸 (연주)|릴리즈|ac0CC0vzWuk|PS
+마음에 쓰는 편지 (연주)|릴리즈|xxnItc1NQvQ|PS
+조개껍질 묶어 (우쿨렐레)|릴리즈|PBHsqagABqY|PF
+사랑하는 마음 (연주)|릴리즈|QamACvvmBD0|PS
+묻어버린 아픔 (연주)|릴리즈|9guL8IPtM1c|PS
+낯설은 아쉬움 (연주)|릴리즈|N-IbtvtIOoU|PS
+하얀 나비 (연주)|릴리즈|L8IDDC0vE3k|PS
+촛불 (연주)|릴리즈|neZw70Nk9Fk|PS
+상처 (연주)|릴리즈|ZP1adRJ_3SM|PS
+연 (연주)|릴리즈|XRG4_PdurkU|PS
+길가에 앉아서 (연주)|릴리즈|Jukal271Now|PF
+나 어떡해 (연주)|릴리즈|9jymtH7EZkw|PF
+I Was Made For Lovin' You|KISS|ZhIsAZO5gl0|PF
+내가 (라이브)|미스터팡|vadVPyn1MbY|KF
+장미 (라이브)|미스터팡|Oys1PqZjcko|KF
+바다새 (박규리와 함께)|미스터팡|9zVqd0xMgws|KF
+빗속의 여인 (라이브)|미스터팡|iwwwivaa20E|KF
+불놀이야 (라이브)|미스터팡|trbMxLUgKMM|KF
+세상 모르고 살았노라 (라이브)|미스터팡|nVsl-6-MdAw|KF
+구름과 나 (라이브)|미스터팡|WqlOwEc4nQ8|KF
+바다에 누워 (라이브)|미스터팡|A7taeXyiMGQ|KF
+젊은 미소 (라이브)|미스터팡|UK7vZ_bnY6c|KF
+집시 여인 (라이브)|미스터팡|kt4eKiJ1Cro|KF
+토요일은 밤이 좋아 (라이브)|미스터팡|v7o9ys5ZQN8|KF
+젊은 그대 (라이브)|미스터팡|17q5LaK_PWo|KF
+너 (라이브)|미스터팡|iU5aZEdQVXw|KF
+한동안 뜸했었지 (라이브)|미스터팡|ikh2XgdXrp8|KF
+한잔의 추억 (라이브)|미스터팡|ni7y22psjfc|KF
+풀잎 사랑 (라이브)|미스터팡|tbmPS5JufSQ|KF
+달빛 창가에서 (라이브)|미스터팡|7Q3ALWCzZVw|KF
+철없던 사랑 (라이브)|미스터팡|hZdc1GUcQmU|KF
+그건 너 (라이브)|미스터팡|g9-qNTmsAe4|KF
+연 (라이브)|미스터팡|kKLtPTx0auk|KF
+나는 못난이 (라이브)|미스터팡|ILbl7fqX3aU|KF
+그대로 그렇게 (라이브)|미스터팡|JzCdw_QglLo|KF
+가버린 친구에게 바침 (라이브)|미스터팡|74S3XDKdZCU|KF
+어쩌다 마주친 그대 (라이브)|미스터팡|6RbCkMj39Zs|KF
+해변으로 가요 (라이브)|미스터팡|rH4RFeAJVeo|KF
+꿈의 대화 (라이브)|미스터팡|I6OJ6m3XFsg|KF
+고래사냥 (라이브)|미스터팡|oEiUgVmrO7g|KF
+나 어떡해 (라이브)|미스터팡|Ty3rhEdevGg|KF
+여행을 떠나요 (라이브)|미스터팡|XyhRZfoXThE|KF`;
+const MOODS = [
+  {id:'KF', genre:'가요', name:'가요 · 빠른 노래', short:'빠른 노래', hint:'테스형! · 땡벌'},
+  {id:'KS', genre:'가요', name:'가요 · 느린 노래', short:'느린 노래', hint:'그 집 앞 · 허공'},
+  {id:'PF', genre:'팝·연주', name:'팝·연주 · 빠른 곡', short:'빠른 곡', hint:'KISS · 짚시 여인'},
+  {id:'PS', genre:'팝·연주', name:'팝·연주 · 느린 곡', short:'느린 곡', hint:'베사메무쵸 · 연주곡'}
+];
+const SONGS = RAW.trim().split('\n').map((l,i)=>{const [title,artist,id,g]=l.split('|');return {i,title,artist,id,g};});
+(function(){const c={};SONGS.forEach(s=>{const k=s.title.replace(/\s*\(.*\)$/,'')+'|'+s.artist;c[k]=(c[k]||0)+1;s.ver=c[k];s.key=k;});
+  SONGS.forEach(s=>{ if(c[s.key]>1) s.artistLabel = s.artist+' · 영상 '+s.ver; else s.artistLabel=s.artist; });})();
+const byTitle =(a,b)=>a.title.localeCompare(b.title,'ko') || a.artist.localeCompare(b.artist,'ko');
+
+const $ = s => document.querySelector(s);
+const store = {
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+};
+let favs = store.get('favs', []);          // 영상 id 목록
+let plays = store.get('plays', {});        // id -> 들은 횟수
+let autoNext = store.get('autoNext', false);
+let queue = [], qPos = 0;
+
+function norm(s){return (s||'').toLowerCase().replace(/[\s\(\)\[\]·.,!?'"-]/g,'');}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600);}
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+const playIcon = '<span class="play-dot"><svg width="18" height="18" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>';
+function songRows(list, holder){
+  holder.innerHTML = list.length ? list.map((s,k)=>`<button class="song" type="button" data-k="${k}"><span class="t"><b>${esc(s.title)}${favs.includes(s.id)?'<span class="heart-mark">♥</span>':''}</b><span>${esc(s.artistLabel)}</span></span>${playIcon}</button>`).join('')
+    : '<p class="empty">찾는 노래가 없어요. 제목의 일부나 가수 이름으로 다시 찾아보세요.</p>';
+  holder.querySelectorAll('.song').forEach(b=>b.addEventListener('click',()=>play(list, +b.dataset.k)));
+}
+
+/* 화면 전환 + 휴대폰 뒤로가기 버튼 지원 */
+function show(view){['home','list','player'].forEach(v=>$('#'+v).hidden = v!==view); window.scrollTo(0,0);}
+function go(view, data){history.pushState({view, data}, ''); render(view, data);}
+function render(view, data){
+  if(view!=='player') stopVideo();
+  if(view==='home'){renderHome(); show('home');}
+  if(view==='list'){openList(data); show('list');}
+  if(view==='player'){show('player');}
+}
+window.addEventListener('popstate', e=>{const s=e.state||{view:'home'}; if(s.view==='player'){render('home');} else render(s.view, s.data);});
+document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>history.back()));
+document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',()=>go('home')));
+
+/* 첫 화면 */
+function renderHome(){
+  $('#moodGrid').innerHTML = ['가요','팝·연주'].map(gn=>`<div class="genre-label">${gn}</div>` + MOODS.filter(m=>m.genre===gn).map(m=>{const n=SONGS.filter(s=>s.g===m.id).length;return `<button class="tile" type="button" data-m="${m.id}"><span class="cnt">${n}곡</span><span><b>${m.short}</b><br><small>${m.hint}</small></span></button>`;}).join('')).join('');
+  $('#moodGrid').querySelectorAll('.tile').forEach(b=>b.addEventListener('click',()=>go('list',{type:'mood',key:b.dataset.m})));
+  $('#allCount').textContent = SONGS.length+'곡';
+  const counts = {}; SONGS.forEach(s=>counts[s.artist]=(counts[s.artist]||0)+1);
+  const top = ['조용필','송골매','남진','전영록','최헌','양수경','미스터팡'];
+  $('#artistChips').innerHTML = top.map(a=>`<button class="chip" type="button" data-a="${a}">${a}</button>`).join('') + '<button class="chip more" type="button" data-a="*">전체 가수 ›</button>';
+  $('#artistChips').querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=> b.dataset.a==='*' ? go('list',{type:'artists'}) : go('list',{type:'artist',key:b.dataset.a})));
+  let fav = SONGS.filter(s=>favs.includes(s.id));
+  const played = SONGS.filter(s=>plays[s.id] && !favs.includes(s.id)).sort((a,b)=>plays[b.id]-plays[a.id]).slice(0, Math.max(0, 5-fav.length));
+  let list = fav.concat(played);
+  if(!list.length) list = SONGS.filter(s=>['NKzCydhgHwI','i0x76xs0bq4','kYCVzpSsH3s'].includes(s.id));
+  songRows(list, $('#favList'));
+}
+
+/* 목록 화면 */
+function openList(d){
+  let title='', tag='', list=[];
+  if(d.type==='mood'){const m=MOODS.find(x=>x.id===d.key); title=m.name; tag='GENRE'; list=SONGS.filter(s=>s.g===d.key).sort(byTitle);}
+  if(d.type==='artist'){title=d.key; tag='ARTIST'; list=SONGS.filter(s=>s.artist===d.key).sort(byTitle);}
+  if(d.type==='all'){title='전체 곡'; tag='ALL'; list=SONGS.slice().sort(byTitle);}
+  if(d.type==='search'){title=`"${d.key}" 찾은 결과`; tag='SEARCH'; const q=norm(d.key); const words=d.key.trim().split(/\s+/).map(norm).filter(Boolean);
+    list=SONGS.filter(s=>{const h=norm(s.title+s.artist); return h.includes(q) || (words.length>1 && words.every(w=>h.includes(w)));});}
+  if(d.type==='artists'){
+    const counts={}; SONGS.forEach(s=>counts[s.artist]=(counts[s.artist]||0)+1);
+    const names=Object.keys(counts).sort((a,b)=>a.localeCompare(b,'ko'));
+    $('#listTag').textContent='ARTIST'; $('#listTitle').textContent='전체 가수'; $('#listCount').textContent=names.length+'명';
+    $('#listBody').innerHTML = names.map(a=>`<button class="song" type="button" data-a="${esc(a)}"><span class="t"><b>${esc(a)}</b><span>${counts[a]}곡</span></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8E6E33" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('');
+    $('#listBody').querySelectorAll('.song').forEach(b=>b.addEventListener('click',()=>go('list',{type:'artist',key:b.dataset.a})));
+    return;
+  }
+  $('#listTag').textContent=tag; $('#listTitle').textContent=title; $('#listCount').textContent=list.length+'곡';
+  songRows(list, $('#listBody'));
+}
+$('#allBtn').addEventListener('click',()=>go('list',{type:'all'}));
+$('#searchForm').addEventListener('submit',e=>{e.preventDefault(); const v=$('#q').value.trim(); if(v){$('#q').blur(); go('list',{type:'search',key:v});}});
+
+/* 말로 찾기 */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+$('#micBtn').addEventListener('click',()=>{
+  if(!SR){toast('이 휴대폰에서는 말로 찾기가 안 돼요. 글자로 찾아 주세요.'); $('#q').focus(); return;}
+  const r = new SR(); r.lang='ko-KR'; r.interimResults=false; r.maxAlternatives=1;
+  $('#micBtn').classList.add('on'); $('#micLabel').textContent='듣고 있어요…';
+  r.onresult = e=>{const t=e.results[0][0].transcript; $('#q').value=t; go('list',{type:'search',key:t});};
+  r.onerror = ()=>toast('잘 못 들었어요. 한 번 더 말씀해 주세요.');
+  r.onend = ()=>{$('#micBtn').classList.remove('on'); $('#micLabel').textContent='눌러서 말하기';};
+  try{r.start();}catch(e){r.onend();}
+});
+
+/* 재생 */
+function play(list, k){
+  queue = list; qPos = k;
+  if($('#player').hidden) history.pushState({view:'player'}, '');
+  loadCurrent(); show('player');
+}
+function loadCurrent(){
+  const s = queue[qPos]; if(!s) return;
+  plays[s.id]=(plays[s.id]||0)+1; store.set('plays',plays);
+  $('#nowTitle').textContent=s.title; $('#nowArtist').textContent=s.artist;
+  $('#endedMsg').hidden = true;
+  $('#ytLink').href = 'https://www.youtube.com/watch?v=' + s.id;
+  setPlaying(true);
+  const origin = encodeURIComponent(location.origin && location.origin!=='null' ? location.origin : '');
+  $('#video').innerHTML = `<iframe id="yt" src="https://www.youtube-nocookie.com/embed/${s.id}?autoplay=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1${origin?'&origin='+origin:''}" title="${esc(s.title)}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  const f=$('#yt'); f.addEventListener('load',()=>{try{f.contentWindow.postMessage(JSON.stringify({event:'listening',id:1}),'*');}catch(e){}});
+  updateFav();
+}
+function stopVideo(){$('#video').innerHTML='';}
+window.addEventListener('message', e=>{
+  if(!/youtube/.test(e.origin)) return;
+  let d; try{d=typeof e.data==='string'?JSON.parse(e.data):e.data;}catch(x){return;}
+  const st = d && d.info && d.info.playerState;
+  if(typeof st==='number') setPlaying(st===1 || st===3);
+  if(st===0){ if(autoNext && qPos < queue.length-1){qPos++; loadCurrent();} else {$('#endedMsg').hidden=false;} }
+});
+/* 가운데 재생·멈춤 버튼 */
+let isPlaying = true;
+function setPlaying(v){
+  isPlaying = v;
+  $('#ppIcon').innerHTML = v ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>' : '<path d="M8 5v14l11-7z"/>';
+  $('#ppLabel').textContent = v ? '멈춤' : '재생';
+  $('#ppBtn').setAttribute('aria-label', v ? '멈춤' : '재생');
+}
+function ytCmd(func){const f=$('#yt'); if(f) try{f.contentWindow.postMessage(JSON.stringify({event:'command',func,args:[]}),'*');}catch(e){}}
+$('#ppBtn').addEventListener('click',()=>{ if(isPlaying){ytCmd('pauseVideo'); setPlaying(false);} else {ytCmd('playVideo'); setPlaying(true); $('#endedMsg').hidden=true;} });
+$('#prevBtn').addEventListener('click',()=>{ if(qPos>0){qPos--; loadCurrent();} else toast('첫 번째 곡이에요.'); });
+$('#nextBtn').addEventListener('click',()=>{ if(qPos<queue.length-1){qPos++; loadCurrent();} else toast('마지막 곡이에요.'); });
+$('#fsBtn').addEventListener('click',()=>{
+  const v=$('#video'); const req=v.requestFullscreen||v.webkitRequestFullscreen;
+  if(req){Promise.resolve(req.call(v)).then(()=>{try{screen.orientation.lock('landscape').catch(()=>{});}catch(e){}}).catch(()=>toast('휴대폰을 옆으로 눕혀 보세요.'));}
+  else toast('휴대폰을 옆으로 눕혀 보세요.');
+});
+document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement){try{screen.orientation.unlock();}catch(e){}} });
+
+function setAuto(v){autoNext=v; store.set('autoNext',v); $('#autoBtn').setAttribute('aria-checked', v?'true':'false'); $('#autoState').textContent=v?'켬':'끔';}
+$('#autoBtn').addEventListener('click',()=>setAuto(!autoNext));
+setAuto(autoNext);
+
+function updateFav(){const s=queue[qPos]; const on=s&&favs.includes(s.id); $('#favBtn').classList.toggle('on',on); $('#favLabel').textContent=on?'자주 듣는 곡에 담았어요':'자주 듣는 곡에 담기';}
+$('#favBtn').addEventListener('click',()=>{const s=queue[qPos]; if(!s) return;
+  if(favs.includes(s.id)){favs=favs.filter(x=>x!==s.id); toast('자주 듣는 곡에서 뺐어요.');} else {favs.push(s.id); toast('자주 듣는 곡에 담았어요.');}
+  store.set('favs',favs); updateFav();});
+
+/* 목록 보내기: 휴대폰 공유창으로 가족에게 보내기 */
+$('#shareBtn').addEventListener('click', async ()=>{
+  const list = SONGS.filter(s=>favs.includes(s.id) || plays[s.id]);
+  if(!list.length){toast('아직 담은 곡이 없어요.'); return;}
+  const text = '최홍준님의 애창곡\n' + list.map((s,k)=>`${k+1}. ${s.title} - ${s.artist}`).join('\n');
+  try{ if(navigator.share){await navigator.share({title:'최홍준님의 애창곡', text}); return;} }catch(e){ if(e && e.name==='AbortError') return; }
+  try{ await navigator.clipboard.writeText(text); toast('목록을 복사했어요. 문자나 카톡에 붙여 넣으세요.'); }catch(e){ toast('이 휴대폰에서는 보내기가 안 돼요.'); }
+});
+
+history.replaceState({view:'home'}, '');
+renderHome();
+</script>
+</body>
+</html>
