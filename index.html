@@ -96,17 +96,19 @@ main{display:flex;flex-direction:column;gap:34px;padding-block:24px 40px}
 @media (prefers-reduced-motion:reduce){.arm{transition:none}}
 .vinyl{width:96px;height:96px;margin:0 auto 14px;border-radius:50%;position:relative;
   background:
-    radial-gradient(circle at 50% 50%, var(--gold) 0 17%, #0d1714 17.5% 19%, transparent 19.5%),
+    radial-gradient(circle at 50% 50%, #0d1714 0 22%, transparent 22.5%),
     repeating-radial-gradient(circle at 50% 50%, #151b19 0 1.6px, #222a27 1.6px 3.2px),
     #151b19;
   box-shadow:0 6px 18px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.06);
   animation:spin 6s linear infinite; animation-play-state:paused}
 .vinyl::before{content:"";position:absolute;inset:0;border-radius:50%;
   background:conic-gradient(from 20deg, transparent 0 10%, rgba(255,255,255,.13) 15%, transparent 22% 60%, rgba(255,255,255,.10) 65%, transparent 72%)}
-.vinyl::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--green)}
+.vinyl .vlab{position:absolute;left:50%;top:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;background:var(--gold);z-index:1}
+.vinyl .vlab b{position:absolute;left:0;right:0;top:5px;text-align:center;font:italic 700 11px/1 var(--serif);color:var(--green);letter-spacing:.02em}
+.vinyl .vlab i{position:absolute;left:50%;bottom:7px;width:12px;height:1.5px;margin-left:-6px;background:var(--green);opacity:.7}
+.vinyl::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:#0d1714;z-index:2}
 .vinyl.on{animation-play-state:running}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.vinyl{animation:none}}
 .now h1{margin:0;font-family:var(--serif);font-size:30px;font-weight:700;text-wrap:balance}
 .now p{margin:6px 0 0;font-size:20px;color:rgba(255,255,255,.82)}
 .controls{display:flex;align-items:center;justify-content:center;gap:26px;padding-block:18px}
@@ -197,7 +199,7 @@ main{display:flex;flex-direction:column;gap:34px;padding-block:24px 40px}
     <div class="video" id="video"></div>
   </div>
   <div class="wrap pad">
-    <div class="now"><div class="deck" aria-hidden="true"><div class="vinyl" id="vinyl"></div><svg class="arm" id="arm" viewBox="0 0 126 104"><circle cx="113" cy="16" r="4.5" fill="#0d1714" stroke="#D9B877" stroke-width="1.2"/><circle cx="113" cy="16" r="1.5" fill="#D9B877"/><path d="M113 16 L112 42 Q111 50 102 57 L91 62" fill="none" stroke="#D9B877" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="85" y="59.5" width="8" height="5" rx="1" transform="rotate(-22 89 62)" fill="#D9B877"/></svg></div><h1 id="nowTitle"></h1><p id="nowArtist"></p><a id="ytLink" href="#" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;min-height:44px;line-height:44px;font-size:16px;color:var(--gold);text-decoration:underline">영상이 안 나오면 유튜브에서 열기</a></div>
+    <div class="now"><div class="deck" aria-hidden="true"><div class="vinyl" id="vinyl"><span class="vlab"><b>Joon</b><i></i></span></div><svg class="arm" id="arm" viewBox="0 0 126 104"><circle cx="113" cy="16" r="4.5" fill="#0d1714" stroke="#D9B877" stroke-width="1.2"/><circle cx="113" cy="16" r="1.5" fill="#D9B877"/><path d="M113 16 L112 42 Q111 50 102 57 L91 62" fill="none" stroke="#D9B877" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="85" y="59.5" width="8" height="5" rx="1" transform="rotate(-22 89 62)" fill="#D9B877"/></svg></div><h1 id="nowTitle"></h1><p id="nowArtist"></p><a id="ytLink" href="#" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;min-height:44px;line-height:44px;font-size:16px;color:var(--gold);text-decoration:underline">영상이 안 나오면 유튜브에서 열기</a></div>
     <div class="controls">
       <div class="ctl-wrap"><button class="ctl" id="prevBtn" type="button" aria-label="이전 곡"><svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M6 6h2v12H6zM9.5 12L18 6v12z"/></svg></button><span>이전 곡</span></div>
       <div class="ctl-wrap big"><button class="ctl big" id="ppBtn" type="button" aria-label="멈춤"><svg id="ppIcon" width="40" height="40" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button><span id="ppLabel">멈춤</span></div>
