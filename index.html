@@ -214,6 +214,15 @@ main{gap:40px;padding-block:28px 48px}
 .vinyl .vlab b,.vinyl .vlab i{color:#123B33}
 .vinyl .vlab i{background:#123B33}
 .blocked a{background:#D9B877;color:#0B2A23}
+.gift{display:flex;align-items:center;gap:14px;width:100%;min-height:96px;padding:12px 14px 12px 12px;border:0;border-radius:14px;background:linear-gradient(135deg,#2B6B59,#123B33 60%,#0B2A23);color:#fff;text-align:left;cursor:pointer;box-shadow:0 8px 20px rgba(4,24,18,.22)}
+.gift img{width:72px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#0B2A23}
+.gift .gt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.gift .gt small{font-size:13px;letter-spacing:.18em;color:#D9B877;font-weight:700}
+.gift .gt b{font-family:var(--serif);font-size:23px;line-height:1.25}
+.gift .gt span{font-size:15px;color:rgba(255,255,255,.8)}
+.gift .gp{width:50px;height:50px;border-radius:50%;background:linear-gradient(160deg,#F0DDB0,#D9B877);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.audiobox{position:absolute;inset:0;z-index:1;background:#0B2A23;display:flex;align-items:center;justify-content:center}
+.audiobox img{height:100%;aspect-ratio:1/1;object-fit:cover}
 </style>
 </head>
 <body>
@@ -231,6 +240,7 @@ main{gap:40px;padding-block:28px 48px}
     <div class="mic-hint">예) "조용필 허공"</div>
   </div>
   <main class="wrap pad">
+    <button class="gift" id="giftCard" type="button"><img id="giftImg" alt="" onerror="this.style.visibility='hidden'"><span class="gt"><small>선물 곡</small><b id="giftTitle"></b><span id="giftArtist"></span></span><span class="gp"><svg width="20" height="20" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></button>
     <form class="search" id="searchForm" role="search">
       <label for="q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">노래 제목이나 가수 입력</label>
       <input id="q" type="search" placeholder="제목이나 가수로 찾기" autocomplete="off" enterkeyhint="search">
@@ -273,7 +283,7 @@ main{gap:40px;padding-block:28px 48px}
 <section id="player" hidden>
   <header class="apphead pad">준뮤직</header>
   <div class="wrap">
-    <div class="video"><div id="video" style="position:absolute;inset:0"></div><div class="blocked" id="blocked" hidden><div>이 곡은 유튜브에서만<br>들을 수 있어요</div><a id="blockedLink" href="#" target="_blank" rel="noopener">유튜브에서 듣기</a></div></div>
+    <div class="video"><div id="video" style="position:absolute;inset:0"></div><div class="audiobox" id="audioBox" hidden><img id="audioCover" alt="" onerror="this.style.visibility='hidden'"><audio id="au" preload="auto"></audio></div><div class="blocked" id="blocked" hidden><div>이 곡은 유튜브에서만<br>들을 수 있어요</div><a id="blockedLink" href="#" target="_blank" rel="noopener">유튜브에서 듣기</a></div></div>
   </div>
   <div class="wrap pad">
     <div class="now"><div class="deck" aria-hidden="true"><div class="vinyl" id="vinyl"><span class="vlab"><b>Joon</b><i></i></span></div><svg class="arm" id="arm" viewBox="0 0 126 104"><circle cx="113" cy="16" r="4.5" fill="#0d1714" stroke="#D9B877" stroke-width="1.2"/><circle cx="113" cy="16" r="1.5" fill="#D9B877"/><path d="M113 16 L112 42 Q111 50 102 57 L91 62" fill="none" stroke="#D9B877" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="85" y="59.5" width="8" height="5" rx="1" transform="rotate(-22 89 62)" fill="#D9B877"/></svg></div><h1 id="nowTitle"></h1><p id="nowArtist"></p></div>
@@ -544,6 +554,11 @@ const MOODS = [
 const SONGS = RAW.trim().split('\n').map((l,i)=>{const [title,artist,id,g]=l.split('|');return {i,title,artist,id,g};});
 (function(){const c={};SONGS.forEach(s=>{const k=s.title.replace(/\s*\(.*\)$/,'')+'|'+s.artist;c[k]=(c[k]||0)+1;s.ver=c[k];s.key=k;});
   SONGS.forEach(s=>{ if(c[s.key]>1) s.artistLabel = s.artist+' · 영상 '+s.ver; else s.artistLabel=s.artist; });})();
+/* 선물 곡: 유튜브가 아닌 Suno 노래 */
+const GIFT = {title:'솔향기 되어', artist:'최홍준 작사·작곡', artistLabel:'최홍준 작사·작곡', id:'suno-9d44d583',
+  audio:'https://cdn1.suno.ai/9d44d583-572d-451c-9f21-b34c8551cceb.mp3',
+  cover:'https://cdn2.suno.ai/image_large_9d44d583-572d-451c-9f21-b34c8551cceb.jpeg',
+  page:'https://suno.com/song/9d44d583-572d-451c-9f21-b34c8551cceb'};
 const byTitle =(a,b)=>a.title.localeCompare(b.title,'ko') || a.artist.localeCompare(b.artist,'ko');
 
 const $ = s => document.querySelector(s);
@@ -632,6 +647,8 @@ function openList(d){
   $('#ytAllBtn').textContent = list.length>50 ? '유튜브 앱으로 전체 듣기 (앞 50곡)' : '유튜브 앱으로 전체 듣기';
 }
 $('#allBtn').addEventListener('click',()=>go('list',{type:'all'}));
+$('#giftImg').src=GIFT.cover; $('#giftTitle').textContent=GIFT.title; $('#giftArtist').textContent=GIFT.artist;
+$('#giftCard').addEventListener('click',()=>play([GIFT],0));
 let curList = [];
 $('#playAllBtn').addEventListener('click',()=>{ if(!curList.length) return; setAuto(true); play(curList, 0); toast('처음 곡부터 끝까지 이어서 들려 드려요.'); });
 $('#searchForm').addEventListener('submit',e=>{e.preventDefault(); const v=$('#q').value.trim(); if(v){$('#q').blur(); go('list',{type:'search',key:v});}});
@@ -662,6 +679,9 @@ function loadCurrent(){
   $('#blockedLink').href = 'https://www.youtube.com/watch?v=' + s.id;
   $('#ytLink').href = 'https://www.youtube.com/watch?v=' + s.id;
   setPlaying(true);
+  $('#ytLink').parentElement.hidden = !!s.audio;
+  if(s.audio){ if($('#yt')&&ytReady) ytCmd('pauseVideo'); showAudio(s); updateFav(); return; }
+  hideAudio();
   /* 이미 만든 유튜브 화면이 있으면 그 안에서 영상만 바꿔요 (유튜브 앱 재생목록처럼 이어서 재생) */
   const cur=$('#yt');
   if(cur && ytReady){ ytCmdArgs('loadVideoById',[s.id]); cur.title=s.title; updateFav(); return; }
@@ -672,17 +692,26 @@ function loadCurrent(){
   updateFav();
 }
 let ytReady=false, skipT=0, lastT=0;
+const au = document.getElementById('au');
+const curIsAudio = () => !!(queue[qPos] && queue[qPos].audio);
+function showAudio(s){ $('#audioBox').hidden=false; $('#audioCover').src=s.cover; if(au.getAttribute('src')!==s.audio) au.src=s.audio; else au.currentTime=0; au.play().catch(()=>setPlaying(false)); }
+function hideAudio(){ try{au.pause();}catch(e){} $('#audioBox').hidden=true; }
+au.addEventListener('play',()=>{ if(curIsAudio()) setPlaying(true); });
+au.addEventListener('pause',()=>{ if(curIsAudio() && !au.ended) setPlaying(false); });
+au.addEventListener('ended',()=>{ setPlaying(false); if(autoNext && qPos < queue.length-1){qPos++; loadCurrent();} else {$('#endedMsg').hidden=false;} });
+au.addEventListener('error',()=>{ if(curIsAudio()){ setPlaying(false); toast('노래를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'); } });
 /* 다른 사이트에서 재생을 막아 둔 영상: 안내를 보여 주고, 전체 듣기 중이면 다음 곡으로 */
 function onBlocked(){
   $('#blocked').hidden=false; setPlaying(false);
   if(autoNext && qPos < queue.length-1){ toast('이 곡은 여기서 안 나와서 다음 곡으로 넘어가요.'); skipT=setTimeout(()=>{qPos++; loadCurrent();},3000); }
 }
-function stopVideo(){ if($('#yt')&&ytReady){ userPaused=true; ytCmd('pauseVideo'); } else {$('#video').innerHTML='';} }
+function stopVideo(){ try{au.pause();}catch(e){} if($('#yt')&&ytReady){ userPaused=true; ytCmd('pauseVideo'); } else {$('#video').innerHTML='';} }
 function ytCmdArgs(func,args){const f=$('#yt'); if(f) try{f.contentWindow.postMessage(JSON.stringify({event:'command',func,args}),'*');}catch(e){}}
 window.addEventListener('message', e=>{
   if(!/youtube/.test(e.origin)) return;
   let d; try{d=typeof e.data==='string'?JSON.parse(e.data):e.data;}catch(x){return;}
   ytReady=true;
+  if(curIsAudio()) return;
   if(d && d.event==='onError'){ onBlocked(); return; }
   const st = d && d.info && d.info.playerState;
   /* 재생 시간이 흘러가면 실제로 재생 중인 것: 레코드판을 돌려요 */
@@ -702,11 +731,11 @@ function setPlaying(v){
   $('#ppBtn').setAttribute('aria-label', v ? '멈춤' : '재생');
 }
 function ytCmd(func){const f=$('#yt'); if(f) try{f.contentWindow.postMessage(JSON.stringify({event:'command',func,args:[]}),'*');}catch(e){}}
-$('#ppBtn').addEventListener('click',()=>{ if(isPlaying){userPaused=true; ytCmd('pauseVideo'); setPlaying(false);} else {userPaused=false; ytCmd('playVideo'); setPlaying(true); $('#endedMsg').hidden=true;} });
+$('#ppBtn').addEventListener('click',()=>{ if(curIsAudio()){ if(au.paused){userPaused=false; au.play().catch(()=>{}); $('#endedMsg').hidden=true;} else {userPaused=true; au.pause();} return; } if(isPlaying){userPaused=true; ytCmd('pauseVideo'); setPlaying(false);} else {userPaused=false; ytCmd('playVideo'); setPlaying(true); $('#endedMsg').hidden=true;} });
 /* 홈 버튼을 눌러 앱이 뒤로 가도 노래가 이어지도록 다시 재생을 요청 (유튜브·폰 설정에 따라 막힐 수 있음) */
 let userPaused = false;
 document.addEventListener('visibilitychange',()=>{
-  if(!$('#yt') || userPaused || $('#player').hidden) return;
+  if(curIsAudio() || !$('#yt') || userPaused || $('#player').hidden) return;
   if(document.hidden){ [300,1000,2500].forEach(t=>setTimeout(()=>{ if(document.hidden && !userPaused) ytCmd('playVideo'); },t)); }
   else if(!isPlaying){ ytCmd('playVideo'); }
 });
