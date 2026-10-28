@@ -214,6 +214,7 @@ main{gap:40px;padding-block:28px 48px}
 .vinyl .vlab b,.vinyl .vlab i{color:#123B33}
 .vinyl .vlab i{background:#123B33}
 .blocked a{background:#D9B877;color:#0B2A23}
+.gifts{display:flex;flex-direction:column;gap:10px}
 .gift{display:flex;align-items:center;gap:14px;width:100%;min-height:96px;padding:12px 14px 12px 12px;border:0;border-radius:14px;background:linear-gradient(135deg,#2B6B59,#123B33 60%,#0B2A23);color:#fff;text-align:left;cursor:pointer;box-shadow:0 8px 20px rgba(4,24,18,.22)}
 .gift img{width:72px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#0B2A23}
 .gift .gt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -240,7 +241,7 @@ main{gap:40px;padding-block:28px 48px}
     <div class="mic-hint">예) "조용필 허공"</div>
   </div>
   <main class="wrap pad">
-    <button class="gift" id="giftCard" type="button"><img id="giftImg" alt="" onerror="this.style.visibility='hidden'"><span class="gt"><small>선물 곡</small><b id="giftTitle"></b><span id="giftArtist"></span></span><span class="gp"><svg width="20" height="20" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></button>
+    <div class="gifts" id="gifts"></div>
     <form class="search" id="searchForm" role="search">
       <label for="q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">노래 제목이나 가수 입력</label>
       <input id="q" type="search" placeholder="제목이나 가수로 찾기" autocomplete="off" enterkeyhint="search">
@@ -555,10 +556,12 @@ const SONGS = RAW.trim().split('\n').map((l,i)=>{const [title,artist,id,g]=l.spl
 (function(){const c={};SONGS.forEach(s=>{const k=s.title.replace(/\s*\(.*\)$/,'')+'|'+s.artist;c[k]=(c[k]||0)+1;s.ver=c[k];s.key=k;});
   SONGS.forEach(s=>{ if(c[s.key]>1) s.artistLabel = s.artist+' · 영상 '+s.ver; else s.artistLabel=s.artist; });})();
 /* 선물 곡: 유튜브가 아닌 Suno 노래 */
-const GIFT = {title:'솔향기 되어', artist:'최홍준 작사·작곡', artistLabel:'최홍준 작사·작곡', id:'suno-9d44d583',
-  audio:'https://cdn1.suno.ai/9d44d583-572d-451c-9f21-b34c8551cceb.mp3',
-  cover:'https://cdn2.suno.ai/image_large_9d44d583-572d-451c-9f21-b34c8551cceb.jpeg',
-  page:'https://suno.com/song/9d44d583-572d-451c-9f21-b34c8551cceb'};
+const sunoSong=(title,uuid)=>({title, artist:'최홍준 작사·작곡', artistLabel:'최홍준 작사·작곡', id:'suno-'+uuid.slice(0,8),
+  audio:`https://cdn1.suno.ai/${uuid}.mp3`, cover:`https://cdn2.suno.ai/image_large_${uuid}.jpeg`, page:`https://suno.com/song/${uuid}`});
+const GIFTS = [
+  sunoSong('솔향기 되어','9d44d583-572d-451c-9f21-b34c8551cceb'),
+  sunoSong('푸른 솔방울','47897481-9e22-47c6-a8df-b095fc71e1ea')
+];
 const byTitle =(a,b)=>a.title.localeCompare(b.title,'ko') || a.artist.localeCompare(b.artist,'ko');
 
 const $ = s => document.querySelector(s);
@@ -647,8 +650,8 @@ function openList(d){
   $('#ytAllBtn').textContent = list.length>50 ? '유튜브 앱으로 전체 듣기 (앞 50곡)' : '유튜브 앱으로 전체 듣기';
 }
 $('#allBtn').addEventListener('click',()=>go('list',{type:'all'}));
-$('#giftImg').src=GIFT.cover; $('#giftTitle').textContent=GIFT.title; $('#giftArtist').textContent=GIFT.artist;
-$('#giftCard').addEventListener('click',()=>play([GIFT],0));
+$('#gifts').innerHTML = GIFTS.map((g,k)=>`<button class="gift" type="button" data-k="${k}"><img src="${g.cover}" alt="" onerror="this.style.visibility='hidden'"><span class="gt"><small>선물 곡 ${k+1}</small><b>${esc(g.title)}</b><span>${esc(g.artist)}</span></span><span class="gp"><svg width="20" height="20" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></button>`).join('');
+$('#gifts').querySelectorAll('.gift').forEach(b=>b.addEventListener('click',()=>play(GIFTS,+b.dataset.k)));
 let curList = [];
 $('#playAllBtn').addEventListener('click',()=>{ if(!curList.length) return; setAuto(true); play(curList, 0); toast('처음 곡부터 끝까지 이어서 들려 드려요.'); });
 $('#searchForm').addEventListener('submit',e=>{e.preventDefault(); const v=$('#q').value.trim(); if(v){$('#q').blur(); go('list',{type:'search',key:v});}});
