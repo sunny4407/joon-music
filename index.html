@@ -223,7 +223,7 @@ main{gap:40px;padding-block:28px 48px}
 .gift .gt span{font-size:13px;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gift .gp{width:40px;height:40px;border-radius:50%;background:linear-gradient(160deg,#F0DDB0,#D9B877);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .audiobox{position:absolute;inset:0;z-index:1;background:#0B2A23;display:flex;align-items:center;justify-content:center}
-.audiobox img{height:100%;aspect-ratio:1/1;object-fit:cover}
+.audiobox img{height:100%;width:auto;max-width:100%;object-fit:contain}
 </style>
 </head>
 <body>
@@ -558,9 +558,10 @@ const SONGS = RAW.trim().split('\n').map((l,i)=>{const [title,artist,id,g]=l.spl
 /* 선물 곡: 유튜브가 아닌 Suno 노래 */
 /* 선물 곡: 썬님이 Suno로 만든 노래. 소리 파일은 GitHub에 함께 저장 */
 const sunoSong=(title,file,uuid,note)=>({title, note, artist:(note?note+' · ':'')+'최홍준 작사·작곡', artistLabel:(note?note+' · ':'')+'최홍준 작사·작곡', id:'gift-'+file,
-  audio:file, cover:`https://cdn2.suno.ai/image_large_${uuid}.jpeg`});
+  audio:file, cover:`https://cdn2.suno.ai/image_large_${uuid}.jpeg`, thumb:`https://cdn2.suno.ai/image_large_${uuid}.jpeg`, coverBg:'#0B2A23'});
+const withArt=(g,thumb,cover,bg)=>Object.assign(g,{thumb,cover,coverBg:bg});
 const GIFTS = [
-  sunoSong('솔향기 되어','gift1.mp3','9d44d583-572d-451c-9f21-b34c8551cceb'),
+  withArt(sunoSong('솔향기 되어','gift1.mp3','9d44d583-572d-451c-9f21-b34c8551cceb'),'gift1-thumb.jpg','gift1-cover.jpg','#FFFFFF'),
   sunoSong('푸른 솔방울','gift2.mp3','47897481-9e22-47c6-a8df-b095fc71e1ea'),
   sunoSong('솔향기 되어','gift3.mp3','b298f5fa-1072-4f03-b826-58f38032c1a8','경쾌한 리믹스')
 ];
@@ -652,7 +653,7 @@ function openList(d){
   $('#ytAllBtn').textContent = list.length>50 ? '유튜브 앱으로 전체 듣기 (앞 50곡)' : '유튜브 앱으로 전체 듣기';
 }
 $('#allBtn').addEventListener('click',()=>go('list',{type:'all'}));
-$('#gifts').innerHTML = GIFTS.map((g,k)=>`<button class="gift" type="button" data-k="${k}"><img src="${g.cover}" alt="" onerror="this.style.visibility='hidden'"><span class="gt"><small>선물 곡 ${k+1}${g.note?' · '+g.note:''}</small><b>${esc(g.title)}</b><span>최홍준 작사·작곡</span></span><span class="gp"><svg width="16" height="16" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></button>`).join('');
+$('#gifts').innerHTML = GIFTS.map((g,k)=>`<button class="gift" type="button" data-k="${k}"><img src="${g.thumb}" alt="" onerror="this.style.visibility='hidden'"><span class="gt"><small>선물 곡 ${k+1}${g.note?' · '+g.note:''}</small><b>${esc(g.title)}</b><span>최홍준 작사·작곡</span></span><span class="gp"><svg width="16" height="16" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></button>`).join('');
 $('#gifts').querySelectorAll('.gift').forEach(b=>b.addEventListener('click',()=>play(GIFTS,+b.dataset.k)));
 let curList = [];
 $('#playAllBtn').addEventListener('click',()=>{ if(!curList.length) return; setAuto(true); play(curList, 0); toast('처음 곡부터 끝까지 이어서 들려 드려요.'); });
@@ -699,7 +700,7 @@ function loadCurrent(){
 let ytReady=false, skipT=0, lastT=0;
 const au = document.getElementById('au');
 const curIsAudio = () => !!(queue[qPos] && queue[qPos].audio);
-function showAudio(s){ $('#audioBox').hidden=false; $('#audioCover').src=s.cover; if(au.getAttribute('src')!==s.audio) au.src=s.audio; else au.currentTime=0; au.play().catch(()=>setPlaying(false)); }
+function showAudio(s){ $('#audioBox').hidden=false; $('#audioCover').src=s.cover; $('#audioBox').style.background=s.coverBg||'#0B2A23'; if(au.getAttribute('src')!==s.audio) au.src=s.audio; else au.currentTime=0; au.play().catch(()=>setPlaying(false)); }
 function hideAudio(){ try{au.pause();}catch(e){} $('#audioBox').hidden=true; }
 au.addEventListener('play',()=>{ if(curIsAudio()) setPlaying(true); });
 au.addEventListener('pause',()=>{ if(curIsAudio() && !au.ended) setPlaying(false); });
