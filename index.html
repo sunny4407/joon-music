@@ -214,14 +214,14 @@ main{gap:40px;padding-block:28px 48px}
 .vinyl .vlab b,.vinyl .vlab i{color:#123B33}
 .vinyl .vlab i{background:#123B33}
 .blocked a{background:#D9B877;color:#0B2A23}
-.gifts{display:flex;flex-direction:column;gap:10px}
-.gift{display:flex;align-items:center;gap:14px;width:100%;min-height:96px;padding:12px 14px 12px 12px;border:0;border-radius:14px;background:linear-gradient(135deg,#2B6B59,#123B33 60%,#0B2A23);color:#fff;text-align:left;cursor:pointer;box-shadow:0 8px 20px rgba(4,24,18,.22)}
-.gift img{width:72px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#0B2A23}
-.gift .gt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.gift .gt small{font-size:13px;letter-spacing:.18em;color:#D9B877;font-weight:700}
-.gift .gt b{font-family:var(--serif);font-size:23px;line-height:1.25}
-.gift .gt span{font-size:15px;color:rgba(255,255,255,.8)}
-.gift .gp{width:50px;height:50px;border-radius:50%;background:linear-gradient(160deg,#F0DDB0,#D9B877);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gifts{display:flex;flex-direction:column;gap:8px}
+.gift{display:flex;align-items:center;gap:12px;width:100%;height:72px;padding:0 12px 0 10px;border:0;border-radius:12px;background:linear-gradient(135deg,#2B6B59,#123B33 60%,#0B2A23);color:#fff;text-align:left;cursor:pointer;box-shadow:0 6px 14px rgba(4,24,18,.18)}
+.gift img{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#0B2A23}
+.gift .gt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.gift .gt small{font-size:11px;letter-spacing:.16em;color:#D9B877;font-weight:700}
+.gift .gt b{font-family:var(--serif);font-size:18px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gift .gt span{font-size:13px;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gift .gp{width:40px;height:40px;border-radius:50%;background:linear-gradient(160deg,#F0DDB0,#D9B877);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .audiobox{position:absolute;inset:0;z-index:1;background:#0B2A23;display:flex;align-items:center;justify-content:center}
 .audiobox img{height:100%;aspect-ratio:1/1;object-fit:cover}
 </style>
@@ -557,12 +557,12 @@ const SONGS = RAW.trim().split('\n').map((l,i)=>{const [title,artist,id,g]=l.spl
   SONGS.forEach(s=>{ if(c[s.key]>1) s.artistLabel = s.artist+' · 영상 '+s.ver; else s.artistLabel=s.artist; });})();
 /* 선물 곡: 유튜브가 아닌 Suno 노래 */
 /* 선물 곡: 썬님이 Suno로 만든 노래. 소리 파일은 GitHub에 함께 저장 */
-const sunoSong=(title,file,uuid)=>({title, artist:'최홍준 작사·작곡', artistLabel:'최홍준 작사·작곡', id:'gift-'+file,
+const sunoSong=(title,file,uuid,note)=>({title, note, artist:(note?note+' · ':'')+'최홍준 작사·작곡', artistLabel:(note?note+' · ':'')+'최홍준 작사·작곡', id:'gift-'+file,
   audio:file, cover:`https://cdn2.suno.ai/image_large_${uuid}.jpeg`});
 const GIFTS = [
   sunoSong('솔향기 되어','gift1.mp3','9d44d583-572d-451c-9f21-b34c8551cceb'),
   sunoSong('푸른 솔방울','gift2.mp3','47897481-9e22-47c6-a8df-b095fc71e1ea'),
-  sunoSong('솔향기 되어 (경쾌한 리믹스)','gift3.mp3','b298f5fa-1072-4f03-b826-58f38032c1a8')
+  sunoSong('솔향기 되어','gift3.mp3','b298f5fa-1072-4f03-b826-58f38032c1a8','경쾌한 리믹스')
 ];
 const byTitle =(a,b)=>a.title.localeCompare(b.title,'ko') || a.artist.localeCompare(b.artist,'ko');
 
@@ -652,7 +652,7 @@ function openList(d){
   $('#ytAllBtn').textContent = list.length>50 ? '유튜브 앱으로 전체 듣기 (앞 50곡)' : '유튜브 앱으로 전체 듣기';
 }
 $('#allBtn').addEventListener('click',()=>go('list',{type:'all'}));
-$('#gifts').innerHTML = GIFTS.map((g,k)=>`<button class="gift" type="button" data-k="${k}"><img src="${g.cover}" alt="" onerror="this.style.visibility='hidden'"><span class="gt"><small>선물 곡 ${k+1}</small><b>${esc(g.title)}</b><span>${esc(g.artist)}</span></span><span class="gp"><svg width="20" height="20" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></button>`).join('');
+$('#gifts').innerHTML = GIFTS.map((g,k)=>`<button class="gift" type="button" data-k="${k}"><img src="${g.cover}" alt="" onerror="this.style.visibility='hidden'"><span class="gt"><small>선물 곡 ${k+1}${g.note?' · '+g.note:''}</small><b>${esc(g.title)}</b><span>최홍준 작사·작곡</span></span><span class="gp"><svg width="16" height="16" viewBox="0 0 24 24" fill="#123B33" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></button>`).join('');
 $('#gifts').querySelectorAll('.gift').forEach(b=>b.addEventListener('click',()=>play(GIFTS,+b.dataset.k)));
 let curList = [];
 $('#playAllBtn').addEventListener('click',()=>{ if(!curList.length) return; setAuto(true); play(curList, 0); toast('처음 곡부터 끝까지 이어서 들려 드려요.'); });
