@@ -226,10 +226,9 @@ main{gap:40px;padding-block:28px 48px}
 .ns-remix{border:0;background:transparent;padding:6px 4px;margin:-6px 0;color:#123B33;font-size:13px;font-weight:700;cursor:pointer}
 .lyrics{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:14px 20px;background:rgba(255,255,255,.94);color:#123B33;text-align:center}
 .lyrics .ly-label{font-family:var(--sans);font-size:12px;letter-spacing:.22em;color:#8E6E33;font-weight:700;min-height:14px}
-.lyrics .ly-page{font-family:var(--serif);font-size:22px;line-height:1.85;font-weight:600;transition:opacity .25s;max-width:92%}
-.lyrics .ly-dots{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;max-width:80%}
-.lyrics .ly-dots i{width:5px;height:5px;border-radius:50%;background:#C9D3CE}
-.lyrics .ly-dots i.on{background:#123B33}
+.lyrics .ly-page{font-family:var(--serif);font-size:18px;line-height:1.7;font-weight:600;transition:opacity .25s;max-width:94%;word-break:keep-all}
+.lyrics .ly-bar{width:120px;height:3px;border-radius:2px;background:#D7DED9;overflow:hidden}
+.lyrics .ly-bar>i{display:block;height:100%;background:#123B33;transition:width .3s}
 .lyrics .ly-nav{position:absolute;top:0;bottom:0;width:32%;background:transparent;border:0;cursor:pointer;z-index:3}
 .lyrics .ly-nav.prev{left:0}.lyrics .ly-nav.next{right:0}
 .atext{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:var(--serif);font-size:28px;font-weight:700;color:#123B33;text-align:center;padding:0 20px}
@@ -306,7 +305,7 @@ main{gap:40px;padding-block:28px 48px}
 <section id="player" hidden>
   <header class="apphead pad">준뮤직</header>
   <div class="wrap">
-    <div class="video"><div id="video" style="position:absolute;inset:0"></div><div class="audiobox" id="audioBox" hidden><img id="audioCover" alt="" onerror="this.style.visibility='hidden'"><audio id="au" preload="auto"></audio><div class="atext" id="audioText"></div><div class="lyrics" id="lyrics" hidden><div class="ly-label" id="lyLabel"></div><div class="ly-page" id="lyPage"></div><div class="ly-dots" id="lyDots"></div><button class="ly-nav prev" id="lyPrev" type="button" aria-label="이전 가사"></button><button class="ly-nav next" id="lyNext" type="button" aria-label="다음 가사"></button></div></div><div class="blocked" id="blocked" hidden><div>이 곡은 유튜브에서만<br>들을 수 있어요</div><a id="blockedLink" href="#" target="_blank" rel="noopener">유튜브에서 듣기</a></div></div>
+    <div class="video"><div id="video" style="position:absolute;inset:0"></div><div class="audiobox" id="audioBox" hidden><img id="audioCover" alt="" onerror="this.style.visibility='hidden'"><audio id="au" preload="auto"></audio><div class="atext" id="audioText"></div><div class="lyrics" id="lyrics" hidden><div class="ly-label" id="lyLabel"></div><div class="ly-page" id="lyPage"></div><div class="ly-bar"><i id="lyBar"></i></div><button class="ly-nav prev" id="lyPrev" type="button" aria-label="이전 가사"></button><button class="ly-nav next" id="lyNext" type="button" aria-label="다음 가사"></button></div></div><div class="blocked" id="blocked" hidden><div>이 곡은 유튜브에서만<br>들을 수 있어요</div><a id="blockedLink" href="#" target="_blank" rel="noopener">유튜브에서 듣기</a></div></div>
   </div>
   <div class="wrap pad">
     <div class="now"><div class="deck" aria-hidden="true"><div class="vinyl" id="vinyl"><span class="vlab"><b>Joon</b><i></i></span></div><svg class="arm" id="arm" viewBox="0 0 126 104"><circle cx="113" cy="16" r="4.5" fill="#0d1714" stroke="#D9B877" stroke-width="1.2"/><circle cx="113" cy="16" r="1.5" fill="#D9B877"/><path d="M113 16 L112 42 Q111 50 102 57 L91 62" fill="none" stroke="#D9B877" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="85" y="59.5" width="8" height="5" rx="1" transform="rotate(-22 89 62)" fill="#D9B877"/></svg></div><h1 id="nowTitle"></h1><p id="nowArtist"></p></div>
@@ -752,7 +751,7 @@ const PAGE_LINES=3;
 function krLabel(name){ const x=name.trim(); if(/^verse/i.test(x)){const n=(x.match(/\d+/)||[''])[0]; return n?n+'절':'절';} const tbl={'intro':'시작','pre-chorus':'후렴 앞','chorus':'후렴','bridge':'전환','outro':'맺음','final chorus':'마지막 후렴'}; const base=x.toLowerCase().replace(/\s*\d+$/,''); return tbl[x.toLowerCase()]||tbl[base]||''; }
 function lyricPages(raw){ const out=[]; let label=''; let buf=[]; const flush=()=>{ if(buf.length){ out.push({label,lines:buf.slice()}); buf=[]; } }; raw.split('\n').forEach(l=>{ l=l.trim(); const m=l.match(/^\[(.+)\]$/); if(m){ flush(); label=krLabel(m[1]); return; } if(l===''){ flush(); return; } buf.push(l); if(buf.length>=PAGE_LINES) flush(); }); flush(); return out; }
 let lyPages=[], lyIdx=-1, lyHold=0;
-function renderLy(i){ if(i<0||i>=lyPages.length) return; lyIdx=i; const p=lyPages[i]; const lab=$('#lyLabel'); lab.textContent=p.label||''; lab.style.visibility=p.label?'visible':'hidden'; const pg=$('#lyPage'); pg.style.opacity=0; setTimeout(()=>{ pg.innerHTML=p.lines.map(esc).join('<br>'); pg.style.opacity=1; },160); $('#lyDots').innerHTML=lyPages.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join(''); }
+function renderLy(i){ if(i<0||i>=lyPages.length) return; lyIdx=i; const p=lyPages[i]; const lab=$('#lyLabel'); lab.textContent=p.label||''; lab.style.visibility=p.label?'visible':'hidden'; const pg=$('#lyPage'); pg.style.opacity=0; setTimeout(()=>{ pg.innerHTML=p.lines.map(esc).join('<br>'); pg.style.opacity=1; },160); $('#lyBar').style.width=((i+1)/lyPages.length*100)+'%'; }
 function openLyrics(s){ const raw=LYRICS[s.audio]; const box=$('#lyrics'); if(!raw){ box.hidden=true; $('#audioText').style.visibility='visible'; return; } $('#audioText').style.visibility='hidden'; lyPages=lyricPages(raw); lyIdx=-1; lyHold=0; box.hidden=false; renderLy(0); }
 function showAudio(s){ $('#audioBox').hidden=false;
   openLyrics(s); $('#audioCover').style.visibility=s.cover?'visible':'hidden'; if(s.cover) $('#audioCover').src=s.cover; else $('#audioCover').removeAttribute('src'); $('#audioText').innerHTML = s.cover ? '' : `<small>JOON MUSIC</small>${esc(s.title)}`; $('#audioBox').style.background=s.coverBg||'#0B2A23'; if(au.getAttribute('src')!==s.audio) au.src=s.audio; else au.currentTime=0; au.play().catch(()=>setPlaying(false)); }
@@ -834,7 +833,7 @@ $('#shareBtn').addEventListener('click', async ()=>{
 });
 
 /* 새 버전 자동 반영: 앱으로 돌아올 때 GitHub에 새 버전이 있으면 노래를 듣고 있지 않을 때 다시 불러와요 */
-const APP_VERSION='20261115110720';
+const APP_VERSION='20261115111244';
 async function checkUpdate(){
   try{
     const r=await fetch('index.html?check='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
