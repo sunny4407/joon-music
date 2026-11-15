@@ -563,7 +563,9 @@ I Was Made For Lovin' You|KISS|ZhIsAZO5gl0|PF
 꿈의 대화 (라이브)|미스터팡|I6OJ6m3XFsg|KF
 고래사냥 (라이브)|미스터팡|oEiUgVmrO7g|KF
 나 어떡해 (라이브)|미스터팡|Ty3rhEdevGg|KF
-여행을 떠나요 (라이브)|미스터팡|XyhRZfoXThE|KF`;
+여행을 떠나요 (라이브)|미스터팡|XyhRZfoXThE|KF
+남진 메들리 · 노래모음 30곡|남진|s0q7LBirHCs|KF
+남진 메들리 · 공연 무대|남진|kiEE7hgstJA|KF`;
 const MOODS = [
   {id:'KF', genre:'가요', name:'가요 · 빠른 노래', short:'빠른 노래', hint:'테스형! · 땡벌'},
   {id:'KS', genre:'가요', name:'가요 · 느린 노래', short:'느린 노래', hint:'그 집 앞 · 허공'},
@@ -821,7 +823,7 @@ $('#shareBtn').addEventListener('click', async ()=>{
 });
 
 /* 새 버전 자동 반영: 앱으로 돌아올 때 GitHub에 새 버전이 있으면 노래를 듣고 있지 않을 때 다시 불러와요 */
-const APP_VERSION='20261115111924';
+const APP_VERSION='20261115112411';
 async function checkUpdate(){
   try{
     const r=await fetch('index.html?check='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
