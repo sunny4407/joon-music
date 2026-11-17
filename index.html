@@ -568,14 +568,15 @@ I Was Made For Lovin' You|KISS|ZhIsAZO5gl0|PF
 남진 메들리 · 공연 무대|남진|kiEE7hgstJA|KF
 남진 메들리 (고른 곡)|남진|bsimANZugss|KF
 남진 메들리 · 1시간|남진|nZ9giXvI-pg|KF
-남진 메들리 (고른 곡 2)|남진|F3qHq96nnR4|KF`;
+남진 메들리 (고른 곡 2)|남진|F3qHq96nnR4|KF
+명곡부활단 베스트 명곡 메들리|명곡부활단|PLLfrtkOvqh3lTvmraBdsTBB7IWOvZD3YD|KF`;
 const MOODS = [
   {id:'KF', genre:'가요', name:'가요 · 빠른 노래', short:'빠른 노래', hint:'테스형! · 땡벌'},
   {id:'KS', genre:'가요', name:'가요 · 느린 노래', short:'느린 노래', hint:'그 집 앞 · 허공'},
   {id:'PF', genre:'팝·연주', name:'팝·연주 · 빠른 곡', short:'빠른 곡', hint:'짚시 여인'},
   {id:'PS', genre:'팝·연주', name:'팝·연주 · 느린 곡', short:'느린 곡', hint:'베사메무쵸'}
 ];
-const SONGS = RAW.trim().split('\n').map((l,i)=>{const [title,artist,id,g]=l.split('|');return {i,title,artist,id,g};});
+const SONGS = RAW.trim().split('\n').map((l,i)=>{const [title,artist,id,g]=l.split('|');return {i,title,artist,id,g,pl:/^(PL|OL)/.test(id)};});
 (function(){const c={};SONGS.forEach(s=>{const k=s.title.replace(/\s*\(.*\)$/,'')+'|'+s.artist;c[k]=(c[k]||0)+1;s.ver=c[k];s.key=k;});
   SONGS.forEach(s=>{ if(c[s.key]>1) s.artistLabel = s.artist+' · 영상 '+s.ver; else s.artistLabel=s.artist; });})();
 /* 선물 곡: 유튜브가 아닌 Suno 노래 */
@@ -602,7 +603,6 @@ const CHANGE = [
 ];
 /* 유튜브 재생목록(연속재생) */
 const PLAYLISTS = [
-  {title:'명곡부활단 베스트 명곡', artist:'연속재생 · 93곡', artistLabel:'연속재생 · 93곡', id:'PLLfrtkOvqh3lTvmraBdsTBB7IWOvZD3YD', pl:true},
   {title:'신나는 노래', artist:'연속재생 · 19곡', artistLabel:'연속재생 · 19곡', id:'PLLfrtkOvqh3lZb9fQWcqvZtv_6zSfZg85', pl:true},
   {title:'미스터팡 7080 신나는 노래', artist:'연속재생 · 앨범', artistLabel:'연속재생 · 앨범', id:'OLAK5uy_lRS9ECgEet9N6LkiaYB0ei2FJr8NlCeic', pl:true}
 ];
@@ -839,7 +839,7 @@ $('#shareBtn').addEventListener('click', async ()=>{
 });
 
 /* 새 버전 자동 반영: 앱으로 돌아올 때 GitHub에 새 버전이 있으면 노래를 듣고 있지 않을 때 다시 불러와요 */
-const APP_VERSION='20261117225509';
+const APP_VERSION='20261117230225';
 async function checkUpdate(){
   try{
     const r=await fetch('index.html?check='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
